@@ -43,12 +43,10 @@ class IdentifyGeometry(QgsMapToolIdentify):
         self.setCursor(QCursor())
 
     def canvasReleaseEvent(self, mouseEvent):
-        print "CATCH"
         try:
-            results = self.identify(mouseEvent.x(), mouseEvent.y(), self.LayerSelection, self.VectorLayer)
+            results = self.identify(mouseEvent.x(), mouseEvent.y(), self.LayerSelection, self.AllLayers)
         except:
-            results = self.identify(mouseEvent.x(), mouseEvent.y(), self.TopDownStopAtFirst, self.VectorLayer)
+            results = self.identify(mouseEvent.x(), mouseEvent.y(), self.TopDownStopAtFirst, self.AllLayers)
         if len(results) > 0:
             self.geomIdentified.emit(results[0].mLayer, QgsFeature(results[0].mFeature))
-        print results
 

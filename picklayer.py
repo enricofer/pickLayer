@@ -67,7 +67,7 @@ class pickLayer:
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
 
         #icon_path = ':/plugins/pickLayer/icon.png'
-        icon_path = os.path.join(self.plugin_dir,"icon.png")
+        icon_path = os.path.join(self.plugin_dir,"icons","pickLayer.png")
         # map tool action
         self.mapToolAction = QAction(QIcon(icon_path),"Pick to Layer", self.iface.mainWindow())
         self.mapToolAction.setCheckable(True)
@@ -82,24 +82,24 @@ class pickLayer:
         contextMenu = QMenu()
         self.clipboardLayerAction = contextMenu.addAction("Layer: "+self.selectedLayer.name())
         contextMenu.addAction("")
-        self.setCurrentAction = contextMenu.addAction("Set current layer")
-        self.hideAction = contextMenu.addAction("Hide")
-        self.openPropertiesAction = contextMenu.addAction("Open properties dialog")
+        self.setCurrentAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","mSetCurrentLayer.png")),"Set current layer")
+        self.hideAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","off.png")),"Hide")
+        self.openPropertiesAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","settings.svg")),"Open properties dialog")
         self.setCurrentAction.triggered.connect(self.setCurrentFunc)
         self.hideAction.triggered.connect(self.hideFunc)
         self.openPropertiesAction.triggered.connect(self.openPropertiesFunc)
         if self.selectedLayer.type() == QgsMapLayer.VectorLayer:
-            self.openAttributeTableAction = contextMenu.addAction("Open attribute table")
-            self.openFilterAction = contextMenu.addAction("Open filter dialog")
-            self.startEditingAction = contextMenu.addAction("Start editing")
-            self.stopEditingAction = contextMenu.addAction("Stop editing")
+            self.openAttributeTableAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","mActionOpenTable.png")),"Open attribute table")
+            #self.openFilterAction = contextMenu.addAction("Open filter dialog")
             self.openAttributeTableAction.triggered.connect(self.openAttributeTableFunc)
-            self.openFilterAction.triggered.connect(self.openFilterFunc)
+            #self.openFilterAction.triggered.connect(self.openFilterFunc)
             if self.selectedLayer.isEditable():
-                self.stopEditingAction.triggered.connect(self.startEditingFunc)
+                self.stopEditingAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","mIconEditableEdits.png")),"Stop editing")
+                self.stopEditingAction.triggered.connect(self.stopEditingFunc)
             else:
+                self.startEditingAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","mIconEditable.png")),"Start editing")
                 self.startEditingAction.triggered.connect(self.startEditingFunc)
-            self.editFeatureAction = contextMenu.addAction("Feature edit")
+            self.editFeatureAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","mActionPropertyItem.png")),"Feature attributes edit")
             self.editFeatureAction.triggered.connect(self.editFeatureFunc)
         contextMenu.exec_(QCursor.pos())
 
@@ -115,14 +115,17 @@ class pickLayer:
     def openAttributeTableFunc(self):
         self.iface.showAttributeTable(self.selectedLayer)
         
-    def openFilterFunc(self):
-        pass
+#    def openFilterFunc(self):
+#        pass
         
     def stopEditingFunc(self):
-        self.selectedLayer.stopEditing ()
+        self.iface.setActiveLayer(self.selectedLayer)
+        self.iface.actionToggleEditing().trigger()
         
     def startEditingFunc(self):
-        self.selectedLayer.startEditing ()
+        #self.selectedLayer.startEditing ()
+        self.iface.setActiveLayer(self.selectedLayer)
+        self.iface.actionToggleEditing().trigger()
 
     def editFeatureFunc(self):
         #dlg = QgsAttributeDialog(self.selectedLayer,self.selectedFeature,True)
@@ -132,8 +135,6 @@ class pickLayer:
     def editFeature(self,layer,feature):
         self.selectedLayer = layer
         self.selectedFeature = feature
-        print layer
-        print feature
         self.contextMenuRequest()
         pass
 
