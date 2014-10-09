@@ -1,5 +1,0 @@
-<RCC>
-    <qresource prefix="/plugins/pickLayer" >
-        <file>icon.png</file>
-    </qresource>
-</RCC>

@@ -1,3 +1,3 @@
-autoSaver
+pickLayer
 ===================
-The plugin allows saving project and layers in edit mode at user defined interval
+Set Layer properties and options straight from map canvas

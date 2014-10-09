@@ -28,9 +28,9 @@ from qgis.core import *
 from qgis.utils import plugins
 from qgis.gui import QgsAttributeDialog
 # Initialize Qt resources from file resources.py
-import resources_rc
+#import resources_rc
 # Import the code for the dialog
-#from picklayer_dialog import pickLayerDialog
+from snappingdialog import snappingDialog
 from identifygeometry import IdentifyGeometry
 import os.path
 
@@ -59,7 +59,7 @@ class pickLayer:
         self.mapCanvas = iface.mapCanvas()
         # initialize plugin directory
         self.plugin_dir = os.path.dirname(__file__)
-        #self.dlg = pickLayerDialog()
+        self.snapDlg = snappingDialog()
         self.tra = trace()
 
 
@@ -99,6 +99,8 @@ class pickLayer:
             else:
                 self.startEditingAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","mIconEditable.png")),"Start editing")
                 self.startEditingAction.triggered.connect(self.startEditingFunc)
+            self.snappingOptionsAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","snapIcon.png")),"Snapping options")
+            self.snappingOptionsAction.triggered.connect(self.snappingOptionsFunc)
             self.editFeatureAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","mActionPropertyItem.png")),"Feature attributes edit")
             self.editFeatureAction.triggered.connect(self.editFeatureFunc)
         contextMenu.exec_(QCursor.pos())
@@ -115,21 +117,18 @@ class pickLayer:
     def openAttributeTableFunc(self):
         self.iface.showAttributeTable(self.selectedLayer)
         
-#    def openFilterFunc(self):
-#        pass
-        
     def stopEditingFunc(self):
         self.iface.setActiveLayer(self.selectedLayer)
         self.iface.actionToggleEditing().trigger()
         
     def startEditingFunc(self):
-        #self.selectedLayer.startEditing ()
         self.iface.setActiveLayer(self.selectedLayer)
         self.iface.actionToggleEditing().trigger()
 
+    def snappingOptionsFunc(self):
+        self.snapDlg.getSnappingOptionsDialog(self.selectedLayer)
+
     def editFeatureFunc(self):
-        #dlg = QgsAttributeDialog(self.selectedLayer,self.selectedFeature,True)
-        #dlg.show()
         self.iface.openFeatureForm(self.selectedLayer,self.selectedFeature,True)
 
     def editFeature(self,layer,feature):
@@ -145,9 +144,3 @@ class pickLayer:
     def setMapTool(self):
         self.mapCanvas.setMapTool(self.mapTool)
         
-
-    def run(self):
-        """Run method that performs all the real work"""
-        # show the dialog
-        #self.dlg.show()
-        pass
