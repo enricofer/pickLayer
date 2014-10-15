@@ -32,6 +32,7 @@ from qgis.gui import QgsAttributeDialog
 # Import the code for the dialog
 from snappingdialog import snappingDialog
 from identifygeometry import IdentifyGeometry
+from setdatasource import setDataSource
 import os.path
 
 class trace:
@@ -60,6 +61,7 @@ class pickLayer:
         # initialize plugin directory
         self.plugin_dir = os.path.dirname(__file__)
         self.snapDlg = snappingDialog()
+        self.DsDialog = setDataSource(iface)
         self.tra = trace()
 
 
@@ -85,9 +87,11 @@ class pickLayer:
         self.setCurrentAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","mSetCurrentLayer.png")),"Set current layer")
         self.hideAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","off.png")),"Hide")
         self.openPropertiesAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","settings.svg")),"Open properties dialog")
+        self.setDataSourceAction = contextMenu.addAction("Change Data source")
         self.setCurrentAction.triggered.connect(self.setCurrentFunc)
         self.hideAction.triggered.connect(self.hideFunc)
         self.openPropertiesAction.triggered.connect(self.openPropertiesFunc)
+        self.setDataSourceAction.triggered.connect(self.setDataSourceFunc)
         if self.selectedLayer.type() == QgsMapLayer.VectorLayer:
             self.openAttributeTableAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","mActionOpenTable.png")),"Open attribute table")
             #self.openFilterAction = contextMenu.addAction("Open filter dialog")
@@ -107,6 +111,9 @@ class pickLayer:
 
     def setCurrentFunc(self):
         self.iface.setActiveLayer(self.selectedLayer)
+
+    def setDataSourceFunc(self):
+        self.DsDialog.changeDataSource(self.selectedLayer)
 
     def hideFunc(self):
         self.iface.legendInterface().setLayerVisible(self.selectedLayer, False)
