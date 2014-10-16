@@ -84,6 +84,8 @@ class pickLayer:
         contextMenu = QMenu()
         self.clipboardLayerAction = contextMenu.addAction("Layer: "+self.selectedLayer.name())
         contextMenu.addAction("")
+        self.editFeatureAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","mActionPropertyItem.png")),"Feature attributes edit")
+        self.editFeatureAction.triggered.connect(self.editFeatureFunc)        
         self.setCurrentAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","mSetCurrentLayer.png")),"Set current layer")
         self.hideAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","off.png")),"Hide")
         self.openPropertiesAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","settings.svg")),"Open properties dialog")
@@ -105,8 +107,8 @@ class pickLayer:
                 self.startEditingAction.triggered.connect(self.startEditingFunc)
             self.snappingOptionsAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","snapIcon.png")),"Snapping options")
             self.snappingOptionsAction.triggered.connect(self.snappingOptionsFunc)
-            self.editFeatureAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","mActionPropertyItem.png")),"Feature attributes edit")
-            self.editFeatureAction.triggered.connect(self.editFeatureFunc)
+#            self.editFeatureAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","mActionPropertyItem.png")),"Feature attributes edit")
+#            self.editFeatureAction.triggered.connect(self.editFeatureFunc)
         contextMenu.exec_(QCursor.pos())
 
     def setCurrentFunc(self):
