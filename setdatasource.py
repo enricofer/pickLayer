@@ -43,6 +43,20 @@ class setDataSource(QtGui.QDialog, Ui_changeDataSourceDialog):
         self.setupUi(self)
         self.buttonBox.accepted.connect(self.saveDataSource)
         self.buttonBox.rejected.connect(self.cancelDialog)
+        self.selectDatasourceCombo.activated.connect(self.selectDS)
+        self.openBrowser.clicked.connect(self.openFileBrowser)
+
+    def openFileBrowser(self):
+        exts = "All files (*.*);;ESRI shapefiles (*.shp);; Geojson (*.geojson);;Keyhole markup language (*.kml *.kmz)"
+        fileName = QtGui.QFileDialog.getOpenFileName(None,"select OGR vector file", os.path.dirname(self.layer.source()), exts)
+        if fileName:
+            self.lineEdit.setText(fileName)
+
+    def selectDS(self):
+        if self.selectDatasourceCombo.currentIndex()==0:
+            self.openBrowser.setEnabled(True)
+        else:
+            self.openBrowser.setDisabled(True)
 
     def changeDataSource(self,layer):
         self.layer = layer
@@ -61,7 +75,9 @@ class setDataSource(QtGui.QDialog, Ui_changeDataSourceDialog):
         XMLMapLayer = XMLDocument.createElement("maplayer")
         self.layer.writeLayerXML(XMLMapLayer,XMLDocument)
         self.iface.setActiveLayer(self.layer)
-        nlayer = QgsVectorLayer(self.lineEdit.text(),self.layer.name(), "ogr")
+        datasourceType = self.selectDatasourceCombo.currentText().lower().replace(' ','')
+        print datasourceType
+        nlayer = QgsVectorLayer(self.lineEdit.text(),self.layer.name(), datasourceType)
         QgsMapLayerRegistry.instance().addMapLayer(nlayer)
         print XMLMapLayer.firstChildElement("datasource").firstChild().nodeValue()
         XMLMapLayer.firstChildElement("datasource").firstChild().setNodeValue(os.path.relpath(nlayer.source(),QgsProject.instance().readPath("./")).replace('\\','/'))

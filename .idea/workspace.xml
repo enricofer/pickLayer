@@ -2,13 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="53109ea4-0482-4534-a0d3-e7701d346159" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/pickLayer.iml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/encodings.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/scopes/scope_settings.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/picklayer.py" afterPath="$PROJECT_DIR$/picklayer.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ui_changeDSDialog.ui" afterPath="$PROJECT_DIR$/ui_changeDSDialog.ui" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/setdatasource.py" afterPath="$PROJECT_DIR$/setdatasource.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ui_changeDSDialog.py" afterPath="$PROJECT_DIR$/ui_changeDSDialog.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ui_picksnapdialog.py" afterPath="$PROJECT_DIR$/ui_picksnapdialog.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="pickLayer.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -34,7 +32,7 @@
       <file leaf-file-name="picklayer.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/picklayer.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="25" column="21" selection-start="1306" selection-end="1330" vertical-scroll-proportion="0.0" vertical-offset="184" max-vertical-offset="2862">
+            <state line="25" column="21" selection-start="1306" selection-end="1330" vertical-scroll-proportion="0.0" vertical-offset="1102" max-vertical-offset="2862">
               <folding />
             </state>
           </provider>
@@ -43,7 +41,7 @@
       <file leaf-file-name="setdatasource.py" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/setdatasource.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="58" column="57" selection-start="2459" selection-end="2459" vertical-scroll-proportion="0.8520548" vertical-offset="422" max-vertical-offset="1170">
+            <state line="49" column="33" selection-start="2194" selection-end="2194" vertical-scroll-proportion="0.42259413" vertical-offset="579" max-vertical-offset="1782">
               <folding>
                 <element signature="e#1097#1120#0" expanded="true" />
               </folding>
@@ -63,7 +61,7 @@
       <file leaf-file-name="snappingdialog.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/snappingdialog.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="110" column="19" selection-start="5088" selection-end="5099" vertical-scroll-proportion="0.0" vertical-offset="1646" max-vertical-offset="2376">
+            <state line="110" column="19" selection-start="5088" selection-end="5099" vertical-scroll-proportion="0.0" vertical-offset="1980" max-vertical-offset="2412">
               <folding />
             </state>
           </provider>
@@ -89,7 +87,7 @@
   </component>
   <component name="ProjectFrameBounds">
     <option name="x" value="20" />
-    <option name="width" value="1400" />
+    <option name="width" value="1410" />
     <option name="height" value="862" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
@@ -147,6 +145,7 @@
     <property name="options.splitter.details.proportions" value="0.2" />
     <property name="options.searchVisible" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../postgisQueryBuilder" />
+    <property name="FullScreen" value="false" />
   </component>
   <component name="RunManager">
     <configuration default="true" type="tests" factoryName="py.test">
@@ -282,19 +281,19 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="20" y="0" width="1400" height="862" extended-state="0" />
-    <editor active="true" />
+    <frame x="20" y="0" width="1410" height="862" extended-state="0" />
+    <editor active="false" />
     <layout>
-      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2482066" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -321,6 +320,36 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/picklayer.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="25" column="21" selection-start="1306" selection-end="1330" vertical-scroll-proportion="0.0" vertical-offset="184" max-vertical-offset="2862">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/setdatasource.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="58" column="57" selection-start="2459" selection-end="2459" vertical-scroll-proportion="0.0" vertical-offset="36" max-vertical-offset="1170">
+          <folding>
+            <element signature="e#1097#1120#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ui_picksnapdialog.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1620">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/snappingdialog.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="110" column="19" selection-start="5088" selection-end="5099" vertical-scroll-proportion="0.0" vertical-offset="1980" max-vertical-offset="2412">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/ui_picksnapdialog.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1620">
@@ -344,7 +373,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/setdatasource.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="58" column="57" selection-start="2459" selection-end="2459" vertical-scroll-proportion="0.8520548" vertical-offset="422" max-vertical-offset="1170">
+        <state line="49" column="33" selection-start="2194" selection-end="2194" vertical-scroll-proportion="0.42259413" vertical-offset="579" max-vertical-offset="1782">
           <folding>
             <element signature="e#1097#1120#0" expanded="true" />
           </folding>

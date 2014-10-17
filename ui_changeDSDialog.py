@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Users\DEMO\Documents\dev\pickLayer\ui_changeDSDialog.ui'
 #
-# Created: Wed Oct 15 16:28:06 2014
+# Created: Fri Oct 17 15:16:55 2014
 #      by: PyQt4 UI code generator 4.10.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -33,16 +33,39 @@ class Ui_changeDataSourceDialog(object):
         self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName(_fromUtf8("buttonBox"))
         self.label = QtGui.QLabel(changeDataSourceDialog)
-        self.label.setGeometry(QtCore.QRect(20, 10, 171, 16))
+        self.label.setGeometry(QtCore.QRect(120, 20, 171, 16))
         self.label.setObjectName(_fromUtf8("label"))
         self.lineEdit = QtGui.QLineEdit(changeDataSourceDialog)
-        self.lineEdit.setGeometry(QtCore.QRect(20, 40, 621, 20))
+        self.lineEdit.setGeometry(QtCore.QRect(116, 40, 531, 22))
         self.lineEdit.setObjectName(_fromUtf8("lineEdit"))
+        self.selectDatasourceCombo = QtGui.QComboBox(changeDataSourceDialog)
+        self.selectDatasourceCombo.setGeometry(QtCore.QRect(10, 40, 101, 22))
+        self.selectDatasourceCombo.setObjectName(_fromUtf8("selectDatasourceCombo"))
+        self.selectDatasourceCombo.addItem(_fromUtf8(""))
+        self.selectDatasourceCombo.addItem(_fromUtf8(""))
+        self.selectDatasourceCombo.addItem(_fromUtf8(""))
+        self.selectDatasourceCombo.addItem(_fromUtf8(""))
+        self.selectDatasourceCombo.addItem(_fromUtf8(""))
+        self.selectDatasourceCombo.addItem(_fromUtf8(""))
+        self.label_2 = QtGui.QLabel(changeDataSourceDialog)
+        self.label_2.setGeometry(QtCore.QRect(10, 20, 101, 16))
+        self.label_2.setObjectName(_fromUtf8("label_2"))
+        self.openBrowser = QtGui.QPushButton(changeDataSourceDialog)
+        self.openBrowser.setGeometry(QtCore.QRect(605, 41, 41, 20))
+        self.openBrowser.setObjectName(_fromUtf8("openBrowser"))
 
         self.retranslateUi(changeDataSourceDialog)
         QtCore.QMetaObject.connectSlotsByName(changeDataSourceDialog)
 
     def retranslateUi(self, changeDataSourceDialog):
         changeDataSourceDialog.setWindowTitle(_translate("changeDataSourceDialog", "undoLayerChanges", None))
-        self.label.setText(_translate("changeDataSourceDialog", "DATASOURCE:", None))
+        self.label.setText(_translate("changeDataSourceDialog", "URI:", None))
+        self.selectDatasourceCombo.setItemText(0, _translate("changeDataSourceDialog", "OGR", None))
+        self.selectDatasourceCombo.setItemText(1, _translate("changeDataSourceDialog", "DELIMITED TEXT", None))
+        self.selectDatasourceCombo.setItemText(2, _translate("changeDataSourceDialog", "GPX", None))
+        self.selectDatasourceCombo.setItemText(3, _translate("changeDataSourceDialog", "POSTGRES", None))
+        self.selectDatasourceCombo.setItemText(4, _translate("changeDataSourceDialog", "SPATIALITE", None))
+        self.selectDatasourceCombo.setItemText(5, _translate("changeDataSourceDialog", "ORACLE", None))
+        self.label_2.setText(_translate("changeDataSourceDialog", "Datasource Types", None))
+        self.openBrowser.setText(_translate("changeDataSourceDialog", "....", None))
 
