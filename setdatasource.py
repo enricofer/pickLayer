@@ -22,7 +22,10 @@
 
 from qgis.core import *
 from PyQt4 import QtCore, QtGui
+from PyQt4.QtXml import *
 from ui_changeDSDialog import Ui_changeDataSourceDialog
+from qgis.gui import QgsManageConnectionsDialog
+import os.path
 # create the dialog for zoom to point
 
 
@@ -31,6 +34,7 @@ class setDataSource(QtGui.QDialog, Ui_changeDataSourceDialog):
     def __init__(self,iface):
         QtGui.QDialog.__init__(self)
         self.iface = iface
+        self.canvas = self.iface.mapCanvas()
         # Set up the user interface from Designer.
         # After setupUI you can access any designer object by doing
         # self.<objectname>, and you can use autoconnect slots - see
@@ -49,12 +53,26 @@ class setDataSource(QtGui.QDialog, Ui_changeDataSourceDialog):
         self.hide()
 
     def saveDataSource(self):
-        print "apply"
         self.hide()
+        XMLDocument = QDomDocument("style")
+        XMLMapLayers = QDomElement()
+        XMLMapLayers = XMLDocument.createElement("maplayers")
+        XMLMapLayer = QDomElement()
+        XMLMapLayer = XMLDocument.createElement("maplayer")
+        self.layer.writeLayerXML(XMLMapLayer,XMLDocument)
         self.iface.setActiveLayer(self.layer)
-        nlayer = QgsVectorLayer(self.lineEdit.text(),self.layer.name() , "ogr")
-        nlayer.setRendererV2(self.layer.rendererV2())
-        print nlayer.name()
-        QgsMapLayerRegistry.instance().removeMapLayer(self.layer.id())
+        nlayer = QgsVectorLayer(self.lineEdit.text(),self.layer.name(), "ogr")
         QgsMapLayerRegistry.instance().addMapLayer(nlayer)
-        self.iface.setActiveLayer(self.nlayer)
+        print XMLMapLayer.firstChildElement("datasource").firstChild().nodeValue()
+        XMLMapLayer.firstChildElement("datasource").firstChild().setNodeValue(os.path.relpath(nlayer.source(),QgsProject.instance().readPath("./")).replace('\\','/'))
+        XMLMapLayer.firstChildElement("id").firstChild().setNodeValue(os.path.relpath(nlayer.id()))
+        print XMLMapLayer.firstChildElement("datasource").firstChild().nodeValue()
+        XMLMapLayers.appendChild(XMLMapLayer)
+        XMLDocument.appendChild(XMLMapLayers)
+        #print XMLDocument.toString()
+        nlayer.readLayerXML(XMLMapLayer)
+        self.iface.actionDraw().trigger()
+        self.canvas.refresh()
+        self.iface.legendInterface().refreshLayerSymbology(nlayer)
+        self.iface.setActiveLayer(nlayer)
+        QgsMapLayerRegistry.instance().removeMapLayer(self.layer.id())
