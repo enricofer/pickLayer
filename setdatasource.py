@@ -66,8 +66,19 @@ class setDataSource(QtGui.QDialog, Ui_changeDataSourceDialog):
     def cancelDialog(self):
         self.hide()
 
+    def recoverJoins(self, oldLayer, newLayer):
+        for layer in self.iface.legendInterface().layers():
+            for joinDef in layer.vectorJoins():
+                if joinDef.joinLayerId == oldLayer.id():
+                    newJoinDef = joinDef
+                    newJoinDef.joinLayerId = newLayer.id()
+                    layer.removeJoin(oldLayer.id())
+                    layer.addJoin(newJoinDef)
+
+
     def saveDataSource(self):
         self.hide()
+        # read layer definition
         XMLDocument = QDomDocument("style")
         XMLMapLayers = QDomElement()
         XMLMapLayers = XMLDocument.createElement("maplayers")
@@ -77,15 +88,21 @@ class setDataSource(QtGui.QDialog, Ui_changeDataSourceDialog):
         self.iface.setActiveLayer(self.layer)
         datasourceType = self.selectDatasourceCombo.currentText().lower().replace(' ','')
         print datasourceType
+        # new layer import
         nlayer = QgsVectorLayer(self.lineEdit.text(),self.layer.name(), datasourceType)
+        if self.layer.type() == QgsMapLayer.VectorLayer:
+            self.recoverJoins(self.layer,nlayer)
+            nlayer.setSubsetString(self.layer.subsetString())
         QgsMapLayerRegistry.instance().addMapLayer(nlayer)
         print XMLMapLayer.firstChildElement("datasource").firstChild().nodeValue()
+        # modify DOM element with old layer reference
         XMLMapLayer.firstChildElement("datasource").firstChild().setNodeValue(os.path.relpath(nlayer.source(),QgsProject.instance().readPath("./")).replace('\\','/'))
         XMLMapLayer.firstChildElement("id").firstChild().setNodeValue(os.path.relpath(nlayer.id()))
         print XMLMapLayer.firstChildElement("datasource").firstChild().nodeValue()
         XMLMapLayers.appendChild(XMLMapLayer)
         XMLDocument.appendChild(XMLMapLayers)
         #print XMLDocument.toString()
+        #recover oldlayer properties
         nlayer.readLayerXML(XMLMapLayer)
         self.iface.actionDraw().trigger()
         self.canvas.refresh()

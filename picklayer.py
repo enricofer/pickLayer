@@ -22,7 +22,7 @@
 """
 from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, QTimer
 from PyQt4.QtGui import *
-from PyQt4.QtGui import QAction, QIcon
+from PyQt4.QtGui import QAction, QIcon, QClipboard
 from PyQt4 import uic
 from qgis.core import *
 from qgis.utils import plugins
@@ -105,6 +105,19 @@ class pickLayer:
                 self.startEditingAction.triggered.connect(self.startEditingFunc)
             self.snappingOptionsAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","snapIcon.png")),"Snapping options")
             self.snappingOptionsAction.triggered.connect(self.snappingOptionsFunc)
+            print QgsApplication.clipboard().text()
+            if len(QgsApplication.clipboard().text().splitlines()) > 1:
+                clipFeatLineTXT = QgsApplication.clipboard().text().splitlines()[1]
+                clipFeatsTXT = clipFeatLineTXT.split('\t')
+                print clipFeatsTXT
+                self.clipGeom = QgsGeometry.fromWkt(clipFeatsTXT[0])
+                if self.clipGeom.isGeosValid():
+                    self.pasteGeomAction = contextMenu.addAction("Paste geometry on feature")
+                    self.pasteGeomAction.triggered.connect(self.pasteGeomFunc)
+                    self.pasteAttrsAction = contextMenu.addAction("Paste attributes on feature")
+                    self.pasteAttrsAction.triggered.connect(self.pasteAttrsFunc)
+            self.copyFeatureAction = contextMenu.addAction("Copy feature")
+            self.copyFeatureAction.triggered.connect(self.copyFeatureFunc)
             self.editFeatureAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","mActionPropertyItem.png")),"Feature attributes edit")
             self.editFeatureAction.triggered.connect(self.editFeatureFunc)
         contextMenu.exec_(QCursor.pos())
@@ -137,6 +150,24 @@ class pickLayer:
 
     def editFeatureFunc(self):
         self.iface.openFeatureForm(self.selectedLayer,self.selectedFeature,True)
+
+    def copyFeatureFunc(self):
+        bakActiveLayer = self.iface.activeLayer()
+        self.iface.setActiveLayer(self.selectedLayer)
+        self.selectedLayer.setSelectedFeatures([self.selectedFeature.id()])
+        self.iface.actionCopyFeatures().trigger()
+        self.iface.setActiveLayer(bakActiveLayer)
+
+    def pasteGeomFunc(self):
+        self.selectedLayer.startEditing()
+        #self.selectedFeature.setGeometry(self.clipGeom)
+        self.selectedLayer.changeGeometry(self.selectedFeature.id(), self.clipGeom)
+        self.selectedLayer.updateExtents()
+        self.selectedLayer.setCacheImage(None)
+        self.selectedLayer.triggerRepaint()
+
+    def pasteAttrsFunc(self):
+        pass
 
     def editFeature(self,layer,feature):
         self.selectedLayer = layer
