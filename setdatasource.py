@@ -68,12 +68,13 @@ class setDataSource(QtGui.QDialog, Ui_changeDataSourceDialog):
 
     def recoverJoins(self, oldLayer, newLayer):
         for layer in self.iface.legendInterface().layers():
-            for joinDef in layer.vectorJoins():
-                if joinDef.joinLayerId == oldLayer.id():
-                    newJoinDef = joinDef
-                    newJoinDef.joinLayerId = newLayer.id()
-                    layer.removeJoin(oldLayer.id())
-                    layer.addJoin(newJoinDef)
+            if layer.type() == QgsMapLayer.VectorLayer:
+                for joinDef in layer.vectorJoins():
+                    if joinDef.joinLayerId == oldLayer.id():
+                        newJoinDef = joinDef
+                        newJoinDef.joinLayerId = newLayer.id()
+                        layer.removeJoin(oldLayer.id())
+                        layer.addJoin(newJoinDef)
 
 
     def saveDataSource(self):
