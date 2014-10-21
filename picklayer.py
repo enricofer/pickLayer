@@ -111,7 +111,7 @@ def %s(self):
         self.setCurrentAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","mSetCurrentLayer.png")),"Set current layer")
         self.hideAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","off.png")),"Hide")
         self.openPropertiesAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","settings.svg")),"Open properties dialog")
-        self.zoomToLayerAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","settings.svg")),"Zoom to layer extension")
+        self.zoomToLayerAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","zoomToLayer.png")),"Zoom to layer extension")
         self.setDataSourceAction = contextMenu.addAction("Change Data source")
         self.setCurrentAction.triggered.connect(self.setCurrentFunc)
         self.hideAction.triggered.connect(self.hideFunc)
@@ -122,7 +122,7 @@ def %s(self):
             contextMenu.addSeparator()
             self.openAttributeTableAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","mActionOpenTable.png")),"Open attribute table")
             self.openAttributeTableAction.triggered.connect(self.openAttributeTableFunc)
-            self.zoomToFeatureAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","mActionOpenTable.png")),"Zoom to feature")
+            self.zoomToFeatureAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","zoomToFeature.png")),"Zoom to feature")
             self.zoomToFeatureAction.triggered.connect(self.zoomToFeatureFunc)
             if self.selectedLayer.isEditable():
                 self.stopEditingAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","mIconEditableEdits.png")),"Stop editing")
@@ -138,15 +138,13 @@ def %s(self):
                 self.clipAttrsFieldnames = QgsApplication.clipboard().text().splitlines()[0].split('\t')[1:]
                 self.clipAttrsValues = clipFeatsTXT[1:]
                 self.clipGeom = QgsGeometry.fromWkt(clipFeatsTXT[0])
-                print self.clipAttrsFieldnames
-                print self.clipAttrsValues
                 #if self.clipGeom.isGeosValid():
                 if self.selectedLayer.isEditable() and self.clipGeom:
-                    self.pasteGeomAction = contextMenu.addAction("Paste geometry on feature")
+                    self.pasteGeomAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","pasteIcon.png")),"Paste geometry on feature")
                     self.pasteGeomAction.triggered.connect(self.pasteGeomFunc)
-                    self.pasteAttrsAction = contextMenu.addAction("Paste attributes on feature")
+                    self.pasteAttrsAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","pasteIcon.png")),"Paste attributes on feature")
                     self.pasteAttrsAction.triggered.connect(self.pasteAttrsFunc)
-            self.copyFeatureAction = contextMenu.addAction("Copy feature")
+            self.copyFeatureAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","copyIcon.png")),"Copy feature")
             self.copyFeatureAction.triggered.connect(self.copyFeatureFunc)
             self.editFeatureAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","mActionPropertyItem.png")),"Feature attributes edit")
             self.editFeatureAction.triggered.connect(self.editFeatureFunc)
@@ -154,11 +152,10 @@ def %s(self):
                 actionOrder = 0
                 contextMenu.addSeparator()
                 for action in self.selectedLayer.actions().listActions():
-                    print dir(action)
                     try:
                         customIcon = action.icon()
                     except:
-                        customIcon = QIcon(os.path.join(self.plugin_dir,"icons","settings.svg"))
+                        customIcon = QIcon(os.path.join(self.plugin_dir,"icons","customAction.png"))
                     newActionItem = contextMenu.addAction(customIcon,action.name())
                     newActionItem.triggered.connect(partial(self.customAction,actionOrder))
                     actionOrder += 1

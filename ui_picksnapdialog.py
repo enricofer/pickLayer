@@ -28,7 +28,7 @@ class Ui_pickSnapDialog(object):
         pickSnapDialog.setObjectName(_fromUtf8("pickSnapDialog"))
         pickSnapDialog.resize(178, 189)
         self.label = QtGui.QLabel(pickSnapDialog)
-        self.label.setGeometry(QtCore.QRect(10, 10, 46, 13))
+        self.label.setGeometry(QtCore.QRect(10, 10, 150, 13))
         self.label.setObjectName(_fromUtf8("label"))
         self.snapStateCombo = QtGui.QComboBox(pickSnapDialog)
         self.snapStateCombo.setGeometry(QtCore.QRect(10, 30, 161, 22))
