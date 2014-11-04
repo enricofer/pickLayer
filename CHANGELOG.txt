@@ -1,0 +1,12 @@
+v2.0 03/11/2014
+
+Layer Commands added:
+1)Zoom to Layer
+2)Change Data Source (experimental)
+
+Feature Commands added:
+3)Zoom to Feature
+4)Copy feature and paste geometries and attributes
+
+Other Commands:
+5)Layer Actions Attached to context menu
