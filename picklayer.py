@@ -26,6 +26,7 @@ from PyQt4.QtGui import QAction, QIcon, QClipboard
 from PyQt4 import uic
 from qgis.core import *
 from qgis.utils import plugins
+from qgis.utils import plugins
 from qgis.gui import QgsAttributeDialog
 from functools import *
 # Initialize Qt resources from file resources.py
@@ -207,8 +208,12 @@ def %s(self):
         bakActiveLayer = self.iface.activeLayer()
         self.iface.setActiveLayer(self.selectedLayer)
         self.selectedLayer.setSelectedFeatures([self.selectedFeature.id()])
+        if 'attributepainter' in plugins:
+            ap = plugins['attributepainter']
+            ap.selectSource()
         self.iface.actionCopyFeatures().trigger()
         self.iface.setActiveLayer(bakActiveLayer)
+
 
     def pasteGeomFunc(self):
         #self.selectedLayer.startEditing()

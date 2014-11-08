@@ -2,10 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="53109ea4-0482-4534-a0d3-e7701d346159" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/customActions.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/picklayer.py" afterPath="$PROJECT_DIR$/picklayer.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/setdatasource.py" afterPath="$PROJECT_DIR$/setdatasource.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="pickLayer.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -31,7 +28,7 @@
       <file leaf-file-name="picklayer.py" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/picklayer.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="166" column="26" selection-start="8213" selection-end="8213" vertical-scroll-proportion="0.5230126" vertical-offset="2613" max-vertical-offset="3420">
+            <state line="212" column="27" selection-start="10471" selection-end="10483" vertical-scroll-proportion="0.38354254" vertical-offset="3541" max-vertical-offset="4482">
               <folding>
                 <element signature="e#1136#1219#0" expanded="true" />
               </folding>
@@ -42,7 +39,7 @@
       <file leaf-file-name="setdatasource.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/setdatasource.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="92" column="56" selection-start="3977" selection-end="3977" vertical-scroll-proportion="0.0" vertical-offset="885" max-vertical-offset="1998">
+            <state line="92" column="56" selection-start="3969" selection-end="3969" vertical-scroll-proportion="0.0" vertical-offset="1656" max-vertical-offset="2106">
               <folding />
             </state>
           </provider>
@@ -51,7 +48,7 @@
       <file leaf-file-name="customActions.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/customActions.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="5" column="0" selection-start="65" selection-end="65" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="198">
+            <state line="5" column="0" selection-start="65" selection-end="65" vertical-scroll-proportion="0.0" vertical-offset="90" max-vertical-offset="198">
               <folding />
             </state>
           </provider>
@@ -133,15 +130,19 @@
               <option name="myItemId" value="pickLayer" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="External Libraries" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ExternalLibrariesNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="&lt; Python 2.7.5 (C:/OSGeo4W64/bin/python.exe) &gt;" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.NamedLibraryElementNode" />
+            </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
               <option name="myItemId" value="pickLayer" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pickLayer" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
@@ -153,7 +154,7 @@
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="options.splitter.details.proportions" value="0.2" />
     <property name="options.searchVisible" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../postgisQueryBuilder" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="FullScreen" value="false" />
   </component>
   <component name="RunManager">
@@ -291,7 +292,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="20" y="0" width="1410" height="862" extended-state="0" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -329,6 +330,43 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/picklayer.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="166" column="26" selection-start="8846" selection-end="8846" vertical-scroll-proportion="0.0" vertical-offset="126" max-vertical-offset="4392">
+          <folding>
+            <element signature="e#1136#1219#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/setdatasource.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="92" column="56" selection-start="3969" selection-end="3969" vertical-scroll-proportion="0.0" vertical-offset="1656" max-vertical-offset="2106">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/customActions.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="5" column="0" selection-start="65" selection-end="65" vertical-scroll-proportion="0.0" vertical-offset="90" max-vertical-offset="198">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ui_picksnapdialog.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1620">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/snappingdialog.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="110" column="19" selection-start="5088" selection-end="5099" vertical-scroll-proportion="0.0" vertical-offset="1980" max-vertical-offset="2412">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/picklayer.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="25" column="21" selection-start="1306" selection-end="1330" vertical-scroll-proportion="0.0" vertical-offset="670" max-vertical-offset="2862">
@@ -449,14 +487,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/setdatasource.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="92" column="56" selection-start="3977" selection-end="3977" vertical-scroll-proportion="0.0" vertical-offset="885" max-vertical-offset="1998">
+        <state line="92" column="56" selection-start="3969" selection-end="3969" vertical-scroll-proportion="0.0" vertical-offset="1656" max-vertical-offset="2106">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/picklayer.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="166" column="26" selection-start="8213" selection-end="8213" vertical-scroll-proportion="0.5230126" vertical-offset="2613" max-vertical-offset="3420">
+        <state line="212" column="27" selection-start="10471" selection-end="10483" vertical-scroll-proportion="0.38354254" vertical-offset="3541" max-vertical-offset="4482">
           <folding>
             <element signature="e#1136#1219#0" expanded="true" />
           </folding>
