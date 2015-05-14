@@ -24,7 +24,7 @@ from qgis.core import *
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtXml import *
 from ui_changeDSDialog import Ui_changeDataSourceDialog
-from qgis.gui import QgsManageConnectionsDialog
+from qgis.gui import QgsManageConnectionsDialog, QgsMessageBar
 import os.path
 # create the dialog for zoom to point
 
@@ -44,6 +44,7 @@ class setDataSource(QtGui.QDialog, Ui_changeDataSourceDialog):
         self.buttonBox.accepted.connect(self.saveDataSource)
         self.buttonBox.rejected.connect(self.cancelDialog)
         self.selectDatasourceCombo.activated.connect(self.selectDS)
+        #self.selectDatasourceCombo.hide()
         self.openBrowser.clicked.connect(self.openFileBrowser)
 
     def openFileBrowser(self):
@@ -52,7 +53,8 @@ class setDataSource(QtGui.QDialog, Ui_changeDataSourceDialog):
         if fileName:
             self.lineEdit.setText(fileName)
 
-    def selectDS(self):
+    def selectDS(self,ii):
+        print "changed combo"
         if self.selectDatasourceCombo.currentIndex()==0:
             self.openBrowser.setEnabled(True)
         else:
@@ -61,6 +63,8 @@ class setDataSource(QtGui.QDialog, Ui_changeDataSourceDialog):
     def changeDataSource(self,layer):
         self.layer = layer
         self.lineEdit.setText(self.layer.source())
+        self.selectDatasourceCombo.setCurrentIndex(self.selectDatasourceCombo.findText(self.layer.dataProvider().name().upper()))
+        self.selectDS(0)
         self.show()
 
     def cancelDialog(self):
@@ -88,25 +92,37 @@ class setDataSource(QtGui.QDialog, Ui_changeDataSourceDialog):
         self.layer.writeLayerXML(XMLMapLayer,XMLDocument)
         self.iface.setActiveLayer(self.layer)
         datasourceType = self.selectDatasourceCombo.currentText().lower().replace(' ','')
-        print datasourceType
         # new layer import
         nlayer = QgsVectorLayer(self.lineEdit.text(),self.layer.name(), datasourceType)
-        if self.layer.type() == QgsMapLayer.VectorLayer:
-            self.recoverJoins(self.layer,nlayer)
-            nlayer.setSubsetString(self.layer.subsetString())
-        QgsMapLayerRegistry.instance().addMapLayer(nlayer)
-        print XMLMapLayer.firstChildElement("datasource").firstChild().nodeValue()
-        # modify DOM element with old layer reference
-        XMLMapLayer.firstChildElement("datasource").firstChild().setNodeValue(os.path.relpath(nlayer.source(),QgsProject.instance().readPath("./")).replace('\\','/'))
-        XMLMapLayer.firstChildElement("id").firstChild().setNodeValue(os.path.relpath(nlayer.id()))
-        print XMLMapLayer.firstChildElement("datasource").firstChild().nodeValue()
+        if nlayer.geometryType() != self.layer.geometryType():
+            self.iface.messageBar().pushMessage("Error", "Geometry type mismatch", level=QgsMessageBar.CRITICAL)
+            return
+        #print XMLMapLayer.firstChildElement("datasource").firstChild().nodeValue()
+        #print self.layer.dataProvider().name()
+        # modify DOM element with new layer reference
+        if datasourceType == "ogr":
+            newDatasource = os.path.relpath(nlayer.source(),QgsProject.instance().readPath("./")).replace('\\','/')
+        else:
+            newDatasource = nlayer.source()
+        #print newDatasource
+        XMLMapLayer.firstChildElement("datasource").firstChild().setNodeValue(newDatasource)
+        XMLMapLayer.firstChildElement("provider").firstChild().setNodeValue(datasourceType)
+        #XMLMapLayer.firstChildElement("id").firstChild().setNodeValue(os.path.relpath(nlayer.id()))
         XMLMapLayers.appendChild(XMLMapLayer)
         XMLDocument.appendChild(XMLMapLayers)
+        #print "NEW LAYER"
         #print XMLDocument.toString()
         #recover oldlayer properties
-        nlayer.readLayerXML(XMLMapLayer)
+        #nlayer.readLayerXML(XMLMapLayer)
+        #nlayer = QgsMapLayer.fromLayerDefinition(XMLDocument)[0]
+        #if self.layer.type() == QgsMapLayer.VectorLayer:
+        #    self.recoverJoins(self.layer,nlayer)
+        #    nlayer.setSubsetString(self.layer.subsetString())
+        #QgsMapLayerRegistry.instance().removeMapLayer(self.layer.id())
+        #QgsMapLayerRegistry.instance().addMapLayer(nlayer)
+        self.layer.readLayerXML(XMLMapLayer)
+        self.layer.reload()
         self.iface.actionDraw().trigger()
         self.canvas.refresh()
-        self.iface.legendInterface().refreshLayerSymbology(nlayer)
-        self.iface.setActiveLayer(nlayer)
-        QgsMapLayerRegistry.instance().removeMapLayer(self.layer.id())
+        self.iface.legendInterface().refreshLayerSymbology(self.layer)
+        #self.iface.setActiveLayer(nlayer)
