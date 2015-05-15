@@ -87,7 +87,24 @@ def %s(self):
         self.snapDlg = snappingDialog()
         self.DsDialog = setDataSource(iface)
         self.tra = trace()
+        self.cb = QApplication.clipboard()
 
+
+    def transformToCurrentSRS(self, pPoint, srs):
+        # transformation from provided srs to the current SRS
+        crcMappaCorrente = self.iface.mapCanvas().mapRenderer().destinationCrs() # get current crs
+        #print crcMappaCorrente.srsid()
+        crsDest = crcMappaCorrente
+        crsSrc = QgsCoordinateReferenceSystem(srs)
+        xform = QgsCoordinateTransform(crsSrc, crsDest)
+        return xform.transform(pPoint) # forward transformation: src -> dest
+
+    def transformToWGS84(self, pPoint, srs):
+        # transformation from the provided SRS to WGS84
+        crsSrc = QgsCoordinateReferenceSystem(srs)
+        crsDest = QgsCoordinateReferenceSystem(4326)  # WGS 84
+        xform = QgsCoordinateTransform(crsSrc, crsDest)
+        return xform.transform(pPoint) # forward transformation: src -> dest
 
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
@@ -110,28 +127,40 @@ def %s(self):
         self.clipboardLayerAction = contextMenu.addAction("Layer: "+self.selectedLayer.name())
         if self.selectedLayer.type() == QgsMapLayer.VectorLayer:
             contextMenu.addSeparator()
-            if self.selectedLayer.geometryType() == Qgs.Point:
-                self.clipboardLayerAction = contextMenu.addAction("X: "+self.selectedLayer.name())
-                self.clipboardLayerAction = contextMenu.addAction("Y: "+self.selectedLayer.name())
-                self.clipboardLayerAction = contextMenu.addAction("Long: "+self.selectedLayer.name())
-                self.clipboardLayerAction = contextMenu.addAction("Lat: "+self.selectedLayer.name())
-            elif self.selectedLayer.geometryType() == Qgs.Line:
-                self.clipboardLayerAction = contextMenu.addAction("North: "+round(bound.yMaximum(),5))
-                self.clipboardLayerAction = contextMenu.addAction("South: "+round(bound.yMinimum(),5))
-                self.clipboardLayerAction = contextMenu.addAction("East: "+round(bound.xMinimum(),5))
-                self.clipboardLayerAction = contextMenu.addAction("West: "+round(bound.xMaximum(),5))
-                self.clipboardLayerAction = contextMenu.addAction("Length: "+self.selectedLayer.name())
-            elif self.selectedLayer.geometryType() == Qgs.Polygon:
-                area = round (self.selectedFeature.geometry().area(),2)
-                perim = round (self.selectedFeature.geometry().length(),2)
+            if self.selectedLayer.geometryType() == QGis.Point:
+                pp = self.transformToCurrentSRS(self.selectedFeature.geometry().asPoint(),self.selectedLayer.crs())
+                pg = self.transformToWGS84(self.selectedFeature.geometry().asPoint(),self.selectedLayer.crs())
+                self.lonLat = str(round(pg.x(),8))+","+str(round(pg.y(),8))
+                self.xy = str(round(pp.x(),8))+","+str(round(pg.y(),8))
+                self.clipboardXAction = contextMenu.addAction("X: "+str(round(pp.x(),2)))
+                self.clipboardYAction = contextMenu.addAction("Y: "+str(round(pp.y(),2)))
+                self.clipboardXAction.triggered.connect(self.clipboardXYFunc)
+                self.clipboardYAction.triggered.connect(self.clipboardXYFunc)
+                self.clipboardLonAction = contextMenu.addAction("Lon: "+str(round(pg.x(),6)))
+                self.clipboardLatAction = contextMenu.addAction("Lat: "+str(round(pg.y(),6)))
+                self.clipboardLonAction.triggered.connect(self.clipboardLonLatFunc)
+                self.clipboardLatAction.triggered.connect(self.clipboardLonLatFunc)
+            elif self.selectedLayer.geometryType() == QGis.Line:
+                self.leng = round (self.selectedFeature.geometry().length(),2)
+                bound = self.selectedFeature.geometry().boundingBox()
+                self.clipboardNorthAction = contextMenu.addAction("North: "+str(round(bound.yMaximum(),4)))
+                self.clipboardSouthAction = contextMenu.addAction("South: "+str(round(bound.yMinimum(),4)))
+                self.clipboardEastAction = contextMenu.addAction("East: "+str(round(bound.xMinimum(),4)))
+                self.clipboardWestAction = contextMenu.addAction("West: "+str(round(bound.xMaximum(),4)))
+                self.clipboardLengAction = contextMenu.addAction("Length: "+str(leng))
+                self.clipboardLengAction.triggered.connect(self.clipboardLengFunc)
+            elif self.selectedLayer.geometryType() == QGis.Polygon:
+                self.area = round (self.selectedFeature.geometry().area(),2)
+                self.leng = round (self.selectedFeature.geometry().length(),2)
                 bound = self.selectedFeature.geometry().boundingBox() 
-                self.clipboardLayerAction = contextMenu.addAction("North: "+round(bound.yMaximum(),5))
-                self.clipboardLayerAction = contextMenu.addAction("South: "+round(bound.yMinimum(),5))
-                self.clipboardLayerAction = contextMenu.addAction("East: "+round(bound.xMinimum(),5))
-                self.clipboardLayerAction = contextMenu.addAction("West: "+round(bound.xMaximum(),5))
-                self.clipboardLayerAction = contextMenu.addAction("Perimeter: "+self.selectedLayer.name())
-                self.clipboardLayerAction = contextMenu.addAction("Area: "+self.selectedLayer.name())
-        self.clipboardLayerAction = contextMenu.addAction("Layer: "+self.selectedLayer.name())
+                self.clipboardNorthAction = contextMenu.addAction("North: "+str(round(bound.yMaximum(),4)))
+                self.clipboardSouthAction = contextMenu.addAction("South: "+str(round(bound.yMinimum(),4)))
+                self.clipboardEastAction = contextMenu.addAction("East: "+str(round(bound.xMinimum(),4)))
+                self.clipboardWestAction = contextMenu.addAction("West: "+str(round(bound.xMaximum(),4)))
+                self.clipboardLengAction = contextMenu.addAction("Perimeter: "+str(self.leng))
+                self.clipboardLengAction.triggered.connect(self.clipboardLengFunc)
+                self.clipboardAreaAction = contextMenu.addAction("Area: "+str(self.area))
+                self.clipboardAreaAction.triggered.connect(self.clipboardAreaFunc)
         contextMenu.addSeparator()
         self.setCurrentAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","mSetCurrentLayer.png")),"Set current layer")
         self.hideAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","off.png")),"Hide")
@@ -188,12 +217,18 @@ def %s(self):
 
     def zoomToFeatureFunc(self):
         featureBox = self.selectedFeature.geometry().boundingBox()
-        self.mapCanvas.setExtent(featureBox)
+        p1 = self.transformToCurrentSRS(QgsPoint(featureBox.xMinimum(),featureBox.yMinimum()),self.selectedLayer.crs())
+        p2 = self.transformToCurrentSRS(QgsPoint(featureBox.xMaximum(),featureBox.yMaximum()),self.selectedLayer.crs())
+        print p1.x(),p1.y(),p2.x(),p2.y()
+        self.mapCanvas.setExtent(QgsRectangle(p1.x(),p1.y(),p2.x(),p2.y()))
         self.mapCanvas.refresh()
         
     def zoomToLayerFunc(self):
         layerBox = self.selectedLayer.extent()
-        self.mapCanvas.setExtent(layerBox)
+        p1 = self.transformToCurrentSRS(QgsPoint(layerBox.xMinimum(),layerBox.yMinimum()),self.selectedLayer.crs())
+        p2 = self.transformToCurrentSRS(QgsPoint(layerBox.xMaximum(),layerBox.yMaximum()),self.selectedLayer.crs())
+        print p1.x(),p1.y(),p2.x(),p2.y()
+        self.mapCanvas.setExtent(QgsRectangle(p1.x(),p1.y(),p2.x(),p2.y()))
         self.mapCanvas.refresh()
 
     def setCurrentFunc(self):
@@ -213,7 +248,19 @@ def %s(self):
 
     def openAttributeTableFunc(self):
         self.iface.showAttributeTable(self.selectedLayer)
-        
+
+    def clipboardXYFunc(self):
+        self.cb.setText(self.xy)
+
+    def clipboardLonLatFunc(self):
+        self.cb.setText(self.lonLat)
+
+    def clipboardLengFunc(self):
+        self.cb.setText(str(self.leng))
+
+    def clipboardAreaFunc(self):
+        self.cb.setText(str(self.area))
+
     def stopEditingFunc(self):
         self.iface.setActiveLayer(self.selectedLayer)
         self.iface.actionToggleEditing().trigger()
