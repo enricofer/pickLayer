@@ -108,6 +108,30 @@ def %s(self):
     def contextMenuRequest(self):
         contextMenu = QMenu()
         self.clipboardLayerAction = contextMenu.addAction("Layer: "+self.selectedLayer.name())
+        if self.selectedLayer.type() == QgsMapLayer.VectorLayer:
+            contextMenu.addSeparator()
+            if self.selectedLayer.geometryType() == Qgs.Point:
+                self.clipboardLayerAction = contextMenu.addAction("X: "+self.selectedLayer.name())
+                self.clipboardLayerAction = contextMenu.addAction("Y: "+self.selectedLayer.name())
+                self.clipboardLayerAction = contextMenu.addAction("Long: "+self.selectedLayer.name())
+                self.clipboardLayerAction = contextMenu.addAction("Lat: "+self.selectedLayer.name())
+            elif self.selectedLayer.geometryType() == Qgs.Line:
+                self.clipboardLayerAction = contextMenu.addAction("North: "+round(bound.yMaximum(),5))
+                self.clipboardLayerAction = contextMenu.addAction("South: "+round(bound.yMinimum(),5))
+                self.clipboardLayerAction = contextMenu.addAction("East: "+round(bound.xMinimum(),5))
+                self.clipboardLayerAction = contextMenu.addAction("West: "+round(bound.xMaximum(),5))
+                self.clipboardLayerAction = contextMenu.addAction("Length: "+self.selectedLayer.name())
+            elif self.selectedLayer.geometryType() == Qgs.Polygon:
+                area = round (self.selectedFeature.geometry().area(),2)
+                perim = round (self.selectedFeature.geometry().length(),2)
+                bound = self.selectedFeature.geometry().boundingBox() 
+                self.clipboardLayerAction = contextMenu.addAction("North: "+round(bound.yMaximum(),5))
+                self.clipboardLayerAction = contextMenu.addAction("South: "+round(bound.yMinimum(),5))
+                self.clipboardLayerAction = contextMenu.addAction("East: "+round(bound.xMinimum(),5))
+                self.clipboardLayerAction = contextMenu.addAction("West: "+round(bound.xMaximum(),5))
+                self.clipboardLayerAction = contextMenu.addAction("Perimeter: "+self.selectedLayer.name())
+                self.clipboardLayerAction = contextMenu.addAction("Area: "+self.selectedLayer.name())
+        self.clipboardLayerAction = contextMenu.addAction("Layer: "+self.selectedLayer.name())
         contextMenu.addSeparator()
         self.setCurrentAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","mSetCurrentLayer.png")),"Set current layer")
         self.hideAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","off.png")),"Hide")
