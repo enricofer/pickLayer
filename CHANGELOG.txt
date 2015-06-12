@@ -10,3 +10,8 @@ Feature Commands added:
 
 Other Commands:
 5)Layer Actions Attached to context menu
+
+V2.1 15/05/2015
+1) selected layer and feature infos
+2) copy area and length to clipboard
+3) Change datasource issues fixed
