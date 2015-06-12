@@ -15,3 +15,6 @@ V2.1 15/05/2015
 1) selected layer and feature infos
 2) copy area and length to clipboard
 3) Change datasource issues fixed
+
+v2.2 12/6/2015
+1) issue picking on line feature fixed

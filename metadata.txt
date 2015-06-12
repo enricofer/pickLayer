@@ -10,7 +10,7 @@
 name=pickLayer
 qgisMinimumVersion=2.0
 description=pick to feature on map canvas to perform layer functions
-version=2.1
+version=2.2
 author=Enrico Ferreguti
 email=enricofer@gmail.com
 
@@ -19,7 +19,7 @@ email=enricofer@gmail.com
 # Optional items:
 
 # Uncomment the following line and add your changelog:
-# changelog=2.0 features info, datasource change fixed
+changelog=v2.2 issue picking on line feature fixed
 
 # Tags are comma separated with spaces allowed
 tags= layer, functions, change, snap, properties, editing, hide, context menu, context, menu, datasource, data source

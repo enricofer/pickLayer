@@ -147,7 +147,7 @@ def %s(self):
                 self.clipboardSouthAction = contextMenu.addAction("South: "+str(round(bound.yMinimum(),4)))
                 self.clipboardEastAction = contextMenu.addAction("East: "+str(round(bound.xMinimum(),4)))
                 self.clipboardWestAction = contextMenu.addAction("West: "+str(round(bound.xMaximum(),4)))
-                self.clipboardLengAction = contextMenu.addAction("Length: "+str(leng))
+                self.clipboardLengAction = contextMenu.addAction("Length: "+str(self.leng))
                 self.clipboardLengAction.triggered.connect(self.clipboardLengFunc)
             elif self.selectedLayer.geometryType() == QGis.Polygon:
                 self.area = round (self.selectedFeature.geometry().area(),2)
