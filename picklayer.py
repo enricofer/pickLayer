@@ -121,6 +121,13 @@ def %s(self):
         self.iface.addToolBarIcon(self.mapToolAction)
         self.iface.addPluginToMenu("&Pick to Layer", self.mapToolAction)
 
+    def populateAttributesMenu(self,attributeMenu):
+        field_names = [field.name() for field in self.selectedLayer.pendingFields()]
+        for n in range(0,len(field_names)):
+            fieldName = field_names[n]
+            attributeValue = self.selectedFeature.attributes()[n]
+            self.attributeAction = attributeMenu.addAction("%s: %s" % (fieldName,attributeValue))
+            self.attributeAction.triggered.connect(partial(self.copyToClipboard,attributeValue))
 
     def contextMenuRequest(self):
         contextMenu = QMenu()
@@ -200,6 +207,8 @@ def %s(self):
                     self.pasteAttrsAction.triggered.connect(self.pasteAttrsFunc)
             self.copyFeatureAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","copyIcon.png")),"Copy feature")
             self.copyFeatureAction.triggered.connect(self.copyFeatureFunc)
+            self.attributeMenu = contextMenu.addMenu(QIcon(os.path.join(self.plugin_dir,"icons","viewAttributes.png")),"Feature attributes view")
+            self.populateAttributesMenu(self.attributeMenu)
             self.editFeatureAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","mActionPropertyItem.png")),"Feature attributes edit")
             self.editFeatureAction.triggered.connect(self.editFeatureFunc)
             if self.selectedLayer.actions().listActions():
@@ -248,6 +257,13 @@ def %s(self):
 
     def openAttributeTableFunc(self):
         self.iface.showAttributeTable(self.selectedLayer)
+
+    def copyToClipboard(self,copyValue):
+        try:
+            copytxt = unicode(copyValue)
+        except:
+            copytxt = str(copyValue)
+        self.cb.setText(copytxt)
 
     def clipboardXYFunc(self):
         self.cb.setText(self.xy)

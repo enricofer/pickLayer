@@ -80,7 +80,6 @@ class setDataSource(QtGui.QDialog, Ui_changeDataSourceDialog):
                         layer.removeJoin(oldLayer.id())
                         layer.addJoin(newJoinDef)
 
-
     def saveDataSource(self):
         self.hide()
         # read layer definition
@@ -107,22 +106,12 @@ class setDataSource(QtGui.QDialog, Ui_changeDataSourceDialog):
         #print newDatasource
         XMLMapLayer.firstChildElement("datasource").firstChild().setNodeValue(newDatasource)
         XMLMapLayer.firstChildElement("provider").firstChild().setNodeValue(datasourceType)
-        #XMLMapLayer.firstChildElement("id").firstChild().setNodeValue(os.path.relpath(nlayer.id()))
         XMLMapLayers.appendChild(XMLMapLayer)
         XMLDocument.appendChild(XMLMapLayers)
-        #print "NEW LAYER"
-        #print XMLDocument.toString()
-        #recover oldlayer properties
-        #nlayer.readLayerXML(XMLMapLayer)
-        #nlayer = QgsMapLayer.fromLayerDefinition(XMLDocument)[0]
-        #if self.layer.type() == QgsMapLayer.VectorLayer:
-        #    self.recoverJoins(self.layer,nlayer)
-        #    nlayer.setSubsetString(self.layer.subsetString())
-        #QgsMapLayerRegistry.instance().removeMapLayer(self.layer.id())
-        #QgsMapLayerRegistry.instance().addMapLayer(nlayer)
-        self.layer.readLayerXML(XMLMapLayer)
+        
+        layername = self.layer.name()
+        self.layer.setDataSource(newDatasource,layername,datasourceType)
         self.layer.reload()
-        self.iface.actionDraw().trigger()
         self.canvas.refresh()
         self.iface.legendInterface().refreshLayerSymbology(self.layer)
         #self.iface.setActiveLayer(nlayer)
