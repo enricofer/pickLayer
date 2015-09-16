@@ -126,7 +126,10 @@ def %s(self):
         for n in range(0,len(field_names)):
             fieldName = field_names[n]
             attributeValue = self.selectedFeature.attributes()[n]
-            self.attributeAction = attributeMenu.addAction("%s: %s" % (fieldName,attributeValue))
+            try:#cut long strings
+                self.attributeAction = attributeMenu.addAction("%s: %s" % (fieldName,attributeValue[:40]))
+            except:
+                self.attributeAction = attributeMenu.addAction("%s: %s" % (fieldName,attributeValue))
             self.attributeAction.triggered.connect(partial(self.copyToClipboard,attributeValue))
 
     def contextMenuRequest(self):
