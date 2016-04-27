@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Users\DEMO\Documents\dev\pickLayer\ui_picksnapdialog.ui'
+# Form implementation generated from reading ui file '/home/enrico/Dropbox/dev/pickLayer/ui_picksnapdialog.ui'
 #
-# Created: Fri Oct 17 15:14:19 2014
-#      by: PyQt4 UI code generator 4.10.2
+# Created: Wed Apr 27 18:56:48 2016
+#      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -26,28 +26,29 @@ except AttributeError:
 class Ui_pickSnapDialog(object):
     def setupUi(self, pickSnapDialog):
         pickSnapDialog.setObjectName(_fromUtf8("pickSnapDialog"))
-        pickSnapDialog.resize(178, 189)
+        pickSnapDialog.resize(194, 217)
+        self.verticalLayout = QtGui.QVBoxLayout(pickSnapDialog)
+        self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.label = QtGui.QLabel(pickSnapDialog)
-        self.label.setGeometry(QtCore.QRect(10, 10, 150, 13))
         self.label.setObjectName(_fromUtf8("label"))
+        self.verticalLayout.addWidget(self.label)
         self.snapStateCombo = QtGui.QComboBox(pickSnapDialog)
-        self.snapStateCombo.setGeometry(QtCore.QRect(10, 30, 161, 22))
         self.snapStateCombo.setObjectName(_fromUtf8("snapStateCombo"))
         self.snapStateCombo.addItem(_fromUtf8(""))
         self.snapStateCombo.addItem(_fromUtf8(""))
+        self.verticalLayout.addWidget(self.snapStateCombo)
         self.snapModeCombo = QtGui.QComboBox(pickSnapDialog)
-        self.snapModeCombo.setGeometry(QtCore.QRect(10, 60, 161, 22))
         self.snapModeCombo.setObjectName(_fromUtf8("snapModeCombo"))
         self.snapModeCombo.addItem(_fromUtf8(""))
         self.snapModeCombo.addItem(_fromUtf8(""))
         self.snapModeCombo.addItem(_fromUtf8(""))
+        self.verticalLayout.addWidget(self.snapModeCombo)
         self.snapUnitsCombo = QtGui.QComboBox(pickSnapDialog)
-        self.snapUnitsCombo.setGeometry(QtCore.QRect(10, 90, 161, 22))
         self.snapUnitsCombo.setObjectName(_fromUtf8("snapUnitsCombo"))
         self.snapUnitsCombo.addItem(_fromUtf8(""))
         self.snapUnitsCombo.addItem(_fromUtf8(""))
+        self.verticalLayout.addWidget(self.snapUnitsCombo)
         self.toleranceCombo = QtGui.QComboBox(pickSnapDialog)
-        self.toleranceCombo.setGeometry(QtCore.QRect(10, 120, 161, 22))
         self.toleranceCombo.setEditable(True)
         self.toleranceCombo.setObjectName(_fromUtf8("toleranceCombo"))
         self.toleranceCombo.addItem(_fromUtf8(""))
@@ -56,11 +57,15 @@ class Ui_pickSnapDialog(object):
         self.toleranceCombo.addItem(_fromUtf8(""))
         self.toleranceCombo.addItem(_fromUtf8(""))
         self.toleranceCombo.addItem(_fromUtf8(""))
+        self.verticalLayout.addWidget(self.toleranceCombo)
+        self.avoidIntersections = QtGui.QCheckBox(pickSnapDialog)
+        self.avoidIntersections.setObjectName(_fromUtf8("avoidIntersections"))
+        self.verticalLayout.addWidget(self.avoidIntersections)
         self.buttonOkNo = QtGui.QDialogButtonBox(pickSnapDialog)
-        self.buttonOkNo.setGeometry(QtCore.QRect(0, 150, 171, 32))
         self.buttonOkNo.setOrientation(QtCore.Qt.Horizontal)
         self.buttonOkNo.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
         self.buttonOkNo.setObjectName(_fromUtf8("buttonOkNo"))
+        self.verticalLayout.addWidget(self.buttonOkNo)
 
         self.retranslateUi(pickSnapDialog)
         QtCore.QMetaObject.connectSlotsByName(pickSnapDialog)
@@ -81,4 +86,5 @@ class Ui_pickSnapDialog(object):
         self.toleranceCombo.setItemText(3, _translate("pickSnapDialog", "10.0", None))
         self.toleranceCombo.setItemText(4, _translate("pickSnapDialog", "20.0", None))
         self.toleranceCombo.setItemText(5, _translate("pickSnapDialog", "50.0", None))
+        self.avoidIntersections.setText(_translate("pickSnapDialog", "Avoid intersections", None))
 

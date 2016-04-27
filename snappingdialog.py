@@ -56,74 +56,49 @@ class snappingDialog(QtGui.QDialog, Ui_pickSnapDialog):
         # hide the dialog
         self.hide()
         if self.snapStateCombo.currentIndex() == 0:
-            self.enabledList[self.idLayer] = u'enabled'
+            enabled = True
         else:
-            self.enabledList[self.idLayer] = u'disabled'
-        if self.snapModeCombo.currentIndex() == 0:
-            self.snapToList[self.idLayer] = u'to_vertex'
-        elif self.snapModeCombo.currentIndex() == 1:
-            self.snapToList[self.idLayer] = u'to_segment'
-        else:
-            self.snapToList[self.idLayer] = u'to_vertex_and_segment'
+            enabled = False
+        snappingType = self.snapModeCombo.currentIndex()
         if self.snapModeCombo.currentIndex() == 1:
-            self.toleranceUnitList[self.idLayer] = u'1'
+            unitType = 1
         else:
-            self.toleranceUnitList[self.idLayer] = u'0'
-        self.toleranceList[self.idLayer] = self.toleranceCombo.currentText()
-        self.tra.ce(self.layerSnappingList)
-        self.tra.ce(self.enabledList)
-        self.tra.ce(self.toleranceUnitList)
-        self.tra.ce(self.snapToList)
-        self.tra.ce(self.toleranceList)
+            unitType = 0
+        tolerance = float(self.toleranceCombo.currentText())
+        avoidInterceptions = self.avoidIntersections.isChecked()
         proj = QgsProject.instance()
-        proj.writeEntry("Digitizing", "/LayerSnappingEnabledList", self.layerSnappingList)
-        proj.writeEntry("Digitizing", "/LayerSnappingEnabledList", self.enabledList)
-        proj.writeEntry("Digitizing", "/LayerSnappingToleranceUnitList", self.toleranceUnitList)
-        proj.writeEntry("Digitizing", "/LayerSnapToList", self.snapToList)
-        proj.writeEntry("Digitizing", "/LayerSnappingToleranceList", self.toleranceList)
-        proj.writeEntry("Digitizing", "/AvoidIntersectionsList", self.avoidIntersectionsList)
+        print self.selectedLayer.id(),enabled,snappingType,unitType,tolerance,avoidInterceptions
+        proj.setSnapSettingsForLayer(self.selectedLayer.id(),enabled,snappingType,unitType,tolerance,avoidInterceptions)
         
 
     def getSnappingOptionsDialog(self,layer):
         self.selectedLayer = layer
         proj = QgsProject.instance()
-        self.layerSnappingList = proj.readListEntry("Digitizing", "/LayerSnappingList")[0]
-        self.enabledList = proj.readListEntry("Digitizing", "/LayerSnappingEnabledList")[0]
-        self.toleranceList = proj.readListEntry("Digitizing", "/LayerSnappingToleranceList")[0]
-        self.toleranceUnitList = proj.readListEntry("Digitizing", "/LayerSnappingToleranceUnitList")[0]
-        self.snapToList = proj.readListEntry("Digitizing", "/LayerSnapToList")[0]
-        self.avoidIntersectionsList = proj.readListEntry("Digitizing", "/AvoidIntersectionsList")[0]
-        self.tra.ce(self.layerSnappingList)
-        self.tra.ce(self.enabledList)
-        self.tra.ce(self.toleranceUnitList)
-        self.tra.ce(self.snapToList)
-        self.tra.ce(self.toleranceList)
-        if not self.selectedLayer.id() in self.layerSnappingList:
-            return
-            #self.layerSnappingList.append(self.selectedLayer.id())
-            #self.enabledList.append(u'disabled')
-            #self.toleranceUnitList.append(u'1')
-            #self.snapToList.append(u'to_vertex')
-            #self.toleranceList.append(u'0.0000')
-        self.idLayer = self.layerSnappingList.index(self.selectedLayer.id())
-        self.compileSnapForm(self.idLayer)
+        res = proj.snapSettingsForLayer(layer.id())
+        self.compileSnapForm(res)
         self.label.setText(self.selectedLayer.name())
         self.show()
 
-    def compileSnapForm(self,layerIndex):
-        if self.enabledList[layerIndex] == u'enabled':
+    def compileSnapForm(self,snappingOptions):
+        print snappingOptions
+        enabled = snappingOptions[1]
+        snappingType = snappingOptions[2]
+        unitType = snappingOptions[3]
+        tolerance = snappingOptions[4]
+        avoidInterceptions = snappingOptions[5]
+        if enabled:
             self.snapStateCombo.setCurrentIndex(0)
         else:
             self.snapStateCombo.setCurrentIndex(1)
-        if self.snapToList[layerIndex] == u'to_vertex':
-            self.snapModeCombo.setCurrentIndex(0)
-        elif self.snapToList[layerIndex] == u'to_segment':
-            self.snapModeCombo.setCurrentIndex(1)
-        else:
-            self.snapModeCombo.setCurrentIndex(2)
-        if self.toleranceUnitList[layerIndex] == u'1':
+        self.snapModeCombo.setCurrentIndex(snappingType)
+        if unitType == 1:
             self.snapModeCombo.setCurrentIndex(1)
         else:
             self.snapModeCombo.setCurrentIndex(0)
-        self.toleranceCombo.insertItem(0,self.toleranceList[layerIndex])
+        self.toleranceCombo.insertItem(0,str(tolerance))
         self.toleranceCombo.setCurrentIndex(0)
+        if avoidInterceptions:
+            self.avoidIntersections.setCheckState(True)
+        else:
+            self.avoidIntersections.setChecked(False)
+        self.avoidIntersections.setChecked(avoidInterceptions)
