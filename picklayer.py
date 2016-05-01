@@ -82,9 +82,10 @@ def %s(self):
         # Save reference to the QGIS interface
         self.iface = iface
         self.mapCanvas = iface.mapCanvas()
+        self.utils = iface.mapCanvas().snappingUtils()
         # initialize plugin directory
         self.plugin_dir = os.path.dirname(__file__)
-        self.snapDlg = snappingDialog()
+        self.snapDlg = snappingDialog(iface)
         self.DsDialog = setDataSource(iface)
         self.tra = trace()
         self.cb = QApplication.clipboard()
@@ -141,7 +142,7 @@ def %s(self):
                 pp = self.transformToCurrentSRS(self.selectedFeature.geometry().asPoint(),self.selectedLayer.crs())
                 pg = self.transformToWGS84(self.selectedFeature.geometry().asPoint(),self.selectedLayer.crs())
                 self.lonLat = str(round(pg.x(),8))+","+str(round(pg.y(),8))
-                self.xy = str(round(pp.x(),8))+","+str(round(pg.y(),8))
+                self.xy = str(round(pp.x(),8))+","+str(round(pp.y(),8))
                 self.clipboardXAction = contextMenu.addAction("X: "+str(round(pp.x(),2)))
                 self.clipboardYAction = contextMenu.addAction("Y: "+str(round(pp.y(),2)))
                 self.clipboardXAction.triggered.connect(self.clipboardXYFunc)
@@ -194,8 +195,11 @@ def %s(self):
             else:
                 self.startEditingAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","mIconEditable.png")),"Start editing")
                 self.startEditingAction.triggered.connect(self.startEditingFunc)
-            self.snappingOptionsAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","snapIcon.png")),"Snapping options")
-            self.snappingOptionsAction.triggered.connect(self.snappingOptionsFunc)
+            self.utils.readConfigFromProject()
+            print self.iface,self.mapCanvas,self.utils,self.utils.SnapToMapMode()
+            if self.utils.SnapToMapMode() == QgsSnappingUtils.SnapAdvanced:
+                self.snappingOptionsAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","snapIcon.png")),"Snapping options")
+                self.snappingOptionsAction.triggered.connect(self.snappingOptionsFunc)
             if len(QgsApplication.clipboard().text().splitlines()) > 1:
                 clipFeatLineTXT = QgsApplication.clipboard().text().splitlines()[1]
                 clipFeatsTXT = clipFeatLineTXT.split('\t')

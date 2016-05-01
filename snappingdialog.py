@@ -37,8 +37,9 @@ class trace:
             print string
 
 class snappingDialog(QtGui.QDialog, Ui_pickSnapDialog):
-    def __init__(self):
+    def __init__(self, iface):
         QtGui.QDialog.__init__(self)
+        self.mapCanvas = iface.mapCanvas()
         # Set up the user interface from Designer.
         # After setupUI you can access any designer object by doing
         # self.<objectname>, and you can use autoconnect slots - see
@@ -66,6 +67,19 @@ class snappingDialog(QtGui.QDialog, Ui_pickSnapDialog):
             unitType = 0
         tolerance = float(self.toleranceCombo.currentText())
         avoidInterceptions = self.avoidIntersections.isChecked()
+        '''
+        utils = self.mapCanvas.snappingUtils()
+        if utils.SnapToMapMode() != QgsSnappingUtils.SnapAdvanced:
+            root = QgsProject.instance().layerTreeRoot()
+            layer_list = []
+            for layer in root.findLayers():
+                # LayerConfig(layer, snapping type, tolerance, units)
+                if layer.layer().type() == QgsMapLayer.VectorLayer:
+                    layer_list.append(utils.LayerConfig(layer.layer(), QgsPointLocator.Vertex, 5.0, 2))
+            utils.setLayers(layer_list)
+            utils.setSnapToMapMode(QgsSnappingUtils.SnapAdvanced)
+            self.mapCanvas.setSnappingUtils(utils)
+        '''
         proj = QgsProject.instance()
         print self.selectedLayer.id(),enabled,snappingType,unitType,tolerance,avoidInterceptions
         proj.setSnapSettingsForLayer(self.selectedLayer.id(),enabled,snappingType,unitType,tolerance,avoidInterceptions)
