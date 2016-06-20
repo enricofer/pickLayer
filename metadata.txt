@@ -9,8 +9,8 @@
 [general]
 name=pickLayer
 qgisMinimumVersion=2.0
-description=pick to feature on map canvas to perform layer functions
-version=2.2
+description=pick to feature on map canvas to perform layer and feature commands
+version=2.3
 author=Enrico Ferreguti
 email=enricofer@gmail.com
 
