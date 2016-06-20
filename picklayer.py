@@ -198,8 +198,9 @@ def %s(self):
             self.utils.readConfigFromProject()
             print self.iface,self.mapCanvas,self.utils,self.utils.SnapToMapMode()
             if self.utils.SnapToMapMode() == QgsSnappingUtils.SnapAdvanced:
-                self.snappingOptionsAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","snapIcon.png")),"Snapping options")
-                self.snappingOptionsAction.triggered.connect(self.snappingOptionsFunc)
+                pass
+            self.snappingOptionsAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","snapIcon.png")),"Snapping options")
+            self.snappingOptionsAction.triggered.connect(self.snappingOptionsFunc)
             if len(QgsApplication.clipboard().text().splitlines()) > 1:
                 clipFeatLineTXT = QgsApplication.clipboard().text().splitlines()[1]
                 clipFeatsTXT = clipFeatLineTXT.split('\t')
@@ -302,9 +303,11 @@ def %s(self):
         bakActiveLayer = self.iface.activeLayer()
         self.iface.setActiveLayer(self.selectedLayer)
         self.selectedLayer.setSelectedFeatures([self.selectedFeature.id()])
-        if 'attributepainter' in plugins:
-            ap = plugins['attributepainter']
-            ap.selectSource()
+        if 'attributePainter' in plugins:
+            ap = plugins['attributePainter']
+            ap.setSourceFeature(self.selectedLayer, self.selectedFeature)
+            self.mapCanvas.setMapTool(self.mapTool)
+            ap.apdockwidget.show()
         self.iface.actionCopyFeatures().trigger()
         self.iface.setActiveLayer(bakActiveLayer)
 

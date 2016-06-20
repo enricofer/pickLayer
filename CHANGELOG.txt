@@ -1,13 +1,10 @@
 v2.0 03/11/2014
-
 Layer Commands added:
 1)Zoom to Layer
 2)Change Data Source (experimental)
-
 Feature Commands added:
 3)Zoom to Feature
 4)Copy feature and paste geometries and attributes
-
 Other Commands:
 5)Layer Actions Attached to context menu
 
@@ -18,3 +15,8 @@ V2.1 15/05/2015
 
 v2.2 12/6/2015
 1) issue picking on line feature fixed
+
+v2.3 20/6/2016
+1) attributes values in context submenu - with copy to clipboard of content
+2) configure snapping options issue fixed
+3) coords typo issue fixed
