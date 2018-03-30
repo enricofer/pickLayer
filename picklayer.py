@@ -20,21 +20,15 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, QTimer
-from PyQt4.QtGui import *
-from PyQt4.QtGui import QAction, QIcon, QClipboard
-from PyQt4 import uic
-from qgis.core import *
+from PyQt5 import Qt, QtCore, QtWidgets, QtGui, QtWebKit, QtWebKitWidgets, QtXml, QtNetwork, uic
+from qgis import core, utils, gui
+
 from qgis.utils import plugins
 from qgis.utils import plugins
 from qgis.gui import QgsAttributeDialog
 from functools import *
-# Initialize Qt resources from file resources.py
-#import resources_rc
-# Import the code for the dialog
-from snappingdialog import snappingDialog
-from identifygeometry import IdentifyGeometry
-from setdatasource import setDataSource
+
+from .identifygeometry import IdentifyGeometry
 import os.path
 
 def stringToPythonNames(string):
@@ -45,31 +39,13 @@ def stringToPythonNames(string):
             stringOK += char
     return "action_"+stringOK
 
-class trace:
-
-    def __init__(self):
-        self.trace = None
-        
-    def ce(self,string):
-        if self.trace:
-            print string
+enable_disable = {
+    True: "Enable",
+    False: "Disable"
+}
 
 class pickLayer:
     """QGIS Plugin Implementation."""
-
-    def registerActions(self,layer):
-        acts=[]
-        actionOrder = 0
-        for action in layer.actions().listActions():
-            actionCode = """
-@self
-def %s(self):
-    self.selectedLayer.actions().doAction(%s)""" % (stringToPythonNames(action.name()),actionOrder)
-            acts.append([action.name(),stringToPythonNames(action.name())])
-            print actionCode
-            exec actionCode
-        return acts
-    
 
     def __init__(self, iface):
         """Constructor.
@@ -85,26 +61,25 @@ def %s(self):
         self.utils = iface.mapCanvas().snappingUtils()
         # initialize plugin directory
         self.plugin_dir = os.path.dirname(__file__)
-        self.snapDlg = snappingDialog(iface)
-        self.DsDialog = setDataSource(iface)
-        self.tra = trace()
-        self.cb = QApplication.clipboard()
+        #self.snapDlg = snappingDialog(iface)
+        #self.tra = trace()
+        self.cb = QtWidgets.QApplication.clipboard()
 
 
     def transformToCurrentSRS(self, pPoint, srs):
         # transformation from provided srs to the current SRS
-        crcMappaCorrente = self.iface.mapCanvas().mapRenderer().destinationCrs() # get current crs
+        crcMappaCorrente = self.iface.mapCanvas().mapSettings().destinationCrs() # get current crs
         #print crcMappaCorrente.srsid()
         crsDest = crcMappaCorrente
-        crsSrc = QgsCoordinateReferenceSystem(srs)
-        xform = QgsCoordinateTransform(crsSrc, crsDest)
+        crsSrc = core.QgsCoordinateReferenceSystem(srs)
+        xform = core.QgsCoordinateTransform(crsSrc, crsDest, core.QgsProject.instance())
         return xform.transform(pPoint) # forward transformation: src -> dest
 
     def transformToWGS84(self, pPoint, srs):
         # transformation from the provided SRS to WGS84
-        crsSrc = QgsCoordinateReferenceSystem(srs)
-        crsDest = QgsCoordinateReferenceSystem(4326)  # WGS 84
-        xform = QgsCoordinateTransform(crsSrc, crsDest)
+        crsSrc = core.QgsCoordinateReferenceSystem(srs)
+        crsDest = core.QgsCoordinateReferenceSystem(4326)  # WGS 84
+        xform = core.QgsCoordinateTransform(crsSrc, crsDest, core.QgsProject.instance())
         return xform.transform(pPoint) # forward transformation: src -> dest
 
     def initGui(self):
@@ -113,7 +88,7 @@ def %s(self):
         #icon_path = ':/plugins/pickLayer/icon.png'
         icon_path = os.path.join(self.plugin_dir,"icons","pickLayer.png")
         # map tool action
-        self.mapToolAction = QAction(QIcon(icon_path),"Pick to Layer", self.iface.mainWindow())
+        self.mapToolAction = QtWidgets.QAction(QtGui.QIcon(icon_path),"Pick to Layer", self.iface.mainWindow())
         self.mapToolAction.setCheckable(True)
         self.mapTool = IdentifyGeometry(self.mapCanvas)
         self.mapTool.geomIdentified.connect(self.editFeature)
@@ -123,7 +98,7 @@ def %s(self):
         self.iface.addPluginToMenu("&Pick to Layer", self.mapToolAction)
 
     def populateAttributesMenu(self,attributeMenu):
-        field_names = [field.name() for field in self.selectedLayer.pendingFields()]
+        field_names = [field.name() for field in self.selectedLayer.fields()]
         for n in range(0,len(field_names)):
             fieldName = field_names[n]
             attributeValue = self.selectedFeature.attributes()[n]
@@ -134,11 +109,11 @@ def %s(self):
             self.attributeAction.triggered.connect(partial(self.copyToClipboard,attributeValue))
 
     def contextMenuRequest(self):
-        contextMenu = QMenu()
+        contextMenu = QtWidgets.QMenu()
         self.clipboardLayerAction = contextMenu.addAction("Layer: "+self.selectedLayer.name())
-        if self.selectedLayer.type() == QgsMapLayer.VectorLayer:
+        if self.selectedLayer.type() == core.QgsMapLayer.VectorLayer:
             contextMenu.addSeparator()
-            if self.selectedLayer.geometryType() == QGis.Point:
+            if self.selectedLayer.geometryType() == core.QgsWkbTypes.PointGeometry :
                 pp = self.transformToCurrentSRS(self.selectedFeature.geometry().asPoint(),self.selectedLayer.crs())
                 pg = self.transformToWGS84(self.selectedFeature.geometry().asPoint(),self.selectedLayer.crs())
                 self.lonLat = str(round(pg.x(),8))+","+str(round(pg.y(),8))
@@ -151,7 +126,7 @@ def %s(self):
                 self.clipboardLatAction = contextMenu.addAction("Lat: "+str(round(pg.y(),6)))
                 self.clipboardLonAction.triggered.connect(self.clipboardLonLatFunc)
                 self.clipboardLatAction.triggered.connect(self.clipboardLonLatFunc)
-            elif self.selectedLayer.geometryType() == QGis.Line:
+            elif self.selectedLayer.geometryType() == core.QgsWkbTypes.LineGeometry:
                 self.leng = round (self.selectedFeature.geometry().length(),2)
                 bound = self.selectedFeature.geometry().boundingBox()
                 self.clipboardNorthAction = contextMenu.addAction("North: "+str(round(bound.yMaximum(),4)))
@@ -160,7 +135,7 @@ def %s(self):
                 self.clipboardWestAction = contextMenu.addAction("West: "+str(round(bound.xMaximum(),4)))
                 self.clipboardLengAction = contextMenu.addAction("Length: "+str(self.leng))
                 self.clipboardLengAction.triggered.connect(self.clipboardLengFunc)
-            elif self.selectedLayer.geometryType() == QGis.Polygon:
+            elif self.selectedLayer.geometryType() == core.QgsWkbTypes.PolygonGeometry:
                 self.area = round (self.selectedFeature.geometry().area(),2)
                 self.leng = round (self.selectedFeature.geometry().length(),2)
                 bound = self.selectedFeature.geometry().boundingBox() 
@@ -173,92 +148,83 @@ def %s(self):
                 self.clipboardAreaAction = contextMenu.addAction("Area: "+str(self.area))
                 self.clipboardAreaAction.triggered.connect(self.clipboardAreaFunc)
         contextMenu.addSeparator()
-        self.setCurrentAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","mSetCurrentLayer.png")),"Set current layer")
-        self.hideAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","off.png")),"Hide")
-        self.openPropertiesAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","settings.svg")),"Open properties dialog")
-        self.zoomToLayerAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","zoomToLayer.png")),"Zoom to layer extension")
+        self.setCurrentAction = contextMenu.addAction(QtGui.QIcon(os.path.join(self.plugin_dir,"icons","mSetCurrentLayer.png")),"Set current layer")
+        self.hideAction = contextMenu.addAction(QtGui.QIcon(os.path.join(self.plugin_dir,"icons","off.png")),"Hide")
+        self.openPropertiesAction = contextMenu.addAction(QtGui.QIcon(os.path.join(self.plugin_dir,"icons","settings.svg")),"Open properties dialog")
+        self.zoomToLayerAction = contextMenu.addAction(QtGui.QIcon(os.path.join(self.plugin_dir,"icons","zoomToLayer.png")),"Zoom to layer extension")
         self.setCurrentAction.triggered.connect(self.setCurrentFunc)
         self.hideAction.triggered.connect(self.hideFunc)
         self.openPropertiesAction.triggered.connect(self.openPropertiesFunc)
         self.zoomToLayerAction.triggered.connect(self.zoomToLayerFunc)
-        if self.selectedLayer.type() == QgsMapLayer.VectorLayer:
-            self.openAttributeTableAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","mActionOpenTable.png")),"Open attribute table")
+        if self.selectedLayer.type() == core.QgsMapLayer.VectorLayer:
+            self.openAttributeTableAction = contextMenu.addAction(QtGui.QIcon(os.path.join(self.plugin_dir,"icons","mActionOpenTable.png")),"Open attribute table")
             self.openAttributeTableAction.triggered.connect(self.openAttributeTableFunc)
-            self.setDataSourceAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","dataSource.png")),"Change Data source")
-            self.setDataSourceAction.triggered.connect(self.setDataSourceFunc)
-            contextMenu.addSeparator()
-            self.zoomToFeatureAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","zoomToFeature.png")),"Zoom to feature")
-            self.zoomToFeatureAction.triggered.connect(self.zoomToFeatureFunc)
             if self.selectedLayer.isEditable():
-                self.stopEditingAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","mIconEditableEdits.png")),"Stop editing")
+                self.stopEditingAction = contextMenu.addAction(QtGui.QIcon(os.path.join(self.plugin_dir,"icons","mIconEditableEdits.png")),"Stop editing")
                 self.stopEditingAction.triggered.connect(self.stopEditingFunc)
             else:
-                self.startEditingAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","mIconEditable.png")),"Start editing")
+                self.startEditingAction = contextMenu.addAction(QtGui.QIcon(os.path.join(self.plugin_dir,"icons","mIconEditable.png")),"Start editing")
                 self.startEditingAction.triggered.connect(self.startEditingFunc)
-            self.utils.readConfigFromProject()
-            print self.iface,self.mapCanvas,self.utils,self.utils.SnapToMapMode()
-            if self.utils.SnapToMapMode() == QgsSnappingUtils.SnapAdvanced:
-                pass
-            self.snappingOptionsAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","snapIcon.png")),"Snapping options")
-            self.snappingOptionsAction.triggered.connect(self.snappingOptionsFunc)
-            if len(QgsApplication.clipboard().text().splitlines()) > 1:
-                clipFeatLineTXT = QgsApplication.clipboard().text().splitlines()[1]
+            contextMenu.addSeparator()
+            self.zoomToFeatureAction = contextMenu.addAction(QtGui.QIcon(os.path.join(self.plugin_dir,"icons","zoomToFeature.png")),"Zoom to feature")
+            self.zoomToFeatureAction.triggered.connect(self.zoomToFeatureFunc)
+            if self.isSnappingOn(self.selectedLayer):
+                self.snap_control = not core.QgsProject.instance().snappingConfig().individualLayerSettings(self.selectedLayer).enabled()
+                self.snappingOptionsAction = contextMenu.addAction(QtGui.QIcon(os.path.join(self.plugin_dir,"icons","snapIcon.png")),enable_disable[self.snap_control]+" snap")
+                self.snappingOptionsAction.triggered.connect(self.snappingOptionsFunc)
+            if len(QtWidgets.QApplication.clipboard().text().splitlines()) > 1:
+                clipFeatLineTXT = QtWidgets.QApplication.clipboard().text().splitlines()[1]
                 clipFeatsTXT = clipFeatLineTXT.split('\t')
-                self.clipAttrsFieldnames = QgsApplication.clipboard().text().splitlines()[0].split('\t')[1:]
+                self.clipAttrsFieldnames = QtWidgets.QApplication.clipboard().text().splitlines()[0].split('\t')[1:]
                 self.clipAttrsValues = clipFeatsTXT[1:]
-                self.clipGeom = QgsGeometry.fromWkt(clipFeatsTXT[0])
+                self.clipGeom = core.QgsGeometry.fromWkt(clipFeatsTXT[0])
                 #if self.clipGeom.isGeosValid():
                 if self.selectedLayer.isEditable() and self.clipGeom:
-                    self.pasteGeomAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","pasteIcon.png")),"Paste geometry on feature")
+                    self.pasteGeomAction = contextMenu.addAction(QtGui.QIcon(os.path.join(self.plugin_dir,"icons","pasteIcon.png")),"Paste geometry on feature")
                     self.pasteGeomAction.triggered.connect(self.pasteGeomFunc)
-                    self.pasteAttrsAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","pasteIcon.png")),"Paste attributes on feature")
+                    self.pasteAttrsAction = contextMenu.addAction(QtGui.QIcon(os.path.join(self.plugin_dir,"icons","pasteIcon.png")),"Paste attributes on feature")
                     self.pasteAttrsAction.triggered.connect(self.pasteAttrsFunc)
-            self.copyFeatureAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","copyIcon.png")),"Copy feature")
+            self.copyFeatureAction = contextMenu.addAction(QtGui.QIcon(os.path.join(self.plugin_dir,"icons","copyIcon.png")),"Copy feature")
             self.copyFeatureAction.triggered.connect(self.copyFeatureFunc)
-            self.attributeMenu = contextMenu.addMenu(QIcon(os.path.join(self.plugin_dir,"icons","viewAttributes.png")),"Feature attributes view")
+            self.attributeMenu = contextMenu.addMenu(QtGui.QIcon(os.path.join(self.plugin_dir,"icons","viewAttributes.png")),"Feature attributes view")
             self.populateAttributesMenu(self.attributeMenu)
-            self.editFeatureAction = contextMenu.addAction(QIcon(os.path.join(self.plugin_dir,"icons","mActionPropertyItem.png")),"Feature attributes edit")
+            self.editFeatureAction = contextMenu.addAction(QtGui.QIcon(os.path.join(self.plugin_dir,"icons","mActionPropertyItem.png")),"Feature attributes edit")
             self.editFeatureAction.triggered.connect(self.editFeatureFunc)
-            if self.selectedLayer.actions().listActions():
+            if self.selectedLayer.actions().actions():
                 actionOrder = 0
                 contextMenu.addSeparator()
-                for action in self.selectedLayer.actions().listActions():
+                for action in self.selectedLayer.actions().actions():
                     try:
                         customIcon = action.icon()
                     except:
-                        customIcon = QIcon(os.path.join(self.plugin_dir,"icons","customAction.png"))
+                        customIcon = QtGui.QIcon(os.path.join(self.plugin_dir,"icons","customAction.png"))
                     newActionItem = contextMenu.addAction(customIcon,action.name())
                     newActionItem.triggered.connect(partial(self.customAction,actionOrder))
                     actionOrder += 1
-        contextMenu.exec_(QCursor.pos())
+        contextMenu.exec_(QtGui.QCursor.pos())
 
     def zoomToFeatureFunc(self):
         featureBox = self.selectedFeature.geometry().boundingBox()
-        p1 = self.transformToCurrentSRS(QgsPoint(featureBox.xMinimum(),featureBox.yMinimum()),self.selectedLayer.crs())
-        p2 = self.transformToCurrentSRS(QgsPoint(featureBox.xMaximum(),featureBox.yMaximum()),self.selectedLayer.crs())
-        print p1.x(),p1.y(),p2.x(),p2.y()
-        self.mapCanvas.setExtent(QgsRectangle(p1.x(),p1.y(),p2.x(),p2.y()))
+        p1 = self.transformToCurrentSRS(core.QgsPointXY(featureBox.xMinimum(),featureBox.yMinimum()),self.selectedLayer.crs())
+        p2 = self.transformToCurrentSRS(core.QgsPointXY(featureBox.xMaximum(),featureBox.yMaximum()),self.selectedLayer.crs())
+        self.mapCanvas.setExtent(core.QgsRectangle(p1.x(),p1.y(),p2.x(),p2.y()))
         self.mapCanvas.refresh()
         
     def zoomToLayerFunc(self):
         layerBox = self.selectedLayer.extent()
-        p1 = self.transformToCurrentSRS(QgsPoint(layerBox.xMinimum(),layerBox.yMinimum()),self.selectedLayer.crs())
-        p2 = self.transformToCurrentSRS(QgsPoint(layerBox.xMaximum(),layerBox.yMaximum()),self.selectedLayer.crs())
-        print p1.x(),p1.y(),p2.x(),p2.y()
-        self.mapCanvas.setExtent(QgsRectangle(p1.x(),p1.y(),p2.x(),p2.y()))
+        p1 = self.transformToCurrentSRS(core.QgsPointXY(layerBox.xMinimum(),layerBox.yMinimum()),self.selectedLayer.crs())
+        p2 = self.transformToCurrentSRS(core.QgsPointXY(layerBox.xMaximum(),layerBox.yMaximum()),self.selectedLayer.crs())
+        self.mapCanvas.setExtent(core.QgsRectangle(p1.x(),p1.y(),p2.x(),p2.y()))
         self.mapCanvas.refresh()
 
     def setCurrentFunc(self):
         self.iface.setActiveLayer(self.selectedLayer)
 
-    def setDataSourceFunc(self):
-        self.DsDialog.changeDataSource(self.selectedLayer)
-
     def customAction(self,actionId):
         self.selectedLayer.actions().doActionFeature(actionId,self.selectedFeature)
 
     def hideFunc(self):
-        self.iface.legendInterface().setLayerVisible(self.selectedLayer, False)
+        core.QgsProject.instance().layerTreeRoot().findLayer(self.selectedLayer.id()).setItemVisibilityChecked(False)
         
     def openPropertiesFunc(self):
         self.iface.showLayerProperties(self.selectedLayer)
@@ -267,11 +233,7 @@ def %s(self):
         self.iface.showAttributeTable(self.selectedLayer)
 
     def copyToClipboard(self,copyValue):
-        try:
-            copytxt = unicode(copyValue)
-        except:
-            copytxt = str(copyValue)
-        self.cb.setText(copytxt)
+        self.cb.setText(copyValue)
 
     def clipboardXYFunc(self):
         self.cb.setText(self.xy)
@@ -293,8 +255,17 @@ def %s(self):
         self.iface.setActiveLayer(self.selectedLayer)
         self.iface.actionToggleEditing().trigger()
 
+
+    def isSnappingOn(self,layer):
+        globalSnappingConfig = core.QgsProject.instance().snappingConfig()
+        return globalSnappingConfig.enabled() and globalSnappingConfig.mode() == core.QgsSnappingConfig.AdvancedConfiguration
+
     def snappingOptionsFunc(self):
-        self.snapDlg.getSnappingOptionsDialog(self.selectedLayer)
+        globalSnappingConfig = core.QgsProject.instance().snappingConfig()
+        layerSnapConfig = globalSnappingConfig.individualLayerSettings(self.selectedLayer)
+        layerSnapConfig.setEnabled(self.snap_control)
+        globalSnappingConfig.setIndividualLayerSettings(self.selectedLayer, layerSnapConfig)
+        core.QgsProject.instance().setSnappingConfig(globalSnappingConfig)
 
     def editFeatureFunc(self):
         self.iface.openFeatureForm(self.selectedLayer,self.selectedFeature,True)
@@ -313,8 +284,6 @@ def %s(self):
 
 
     def pasteGeomFunc(self):
-        #self.selectedLayer.startEditing()
-        #self.selectedFeature.setGeometry(self.clipGeom)
         self.selectedLayer.changeGeometry(self.selectedFeature.id(), self.clipGeom)
         self.selectedLayer.updateExtents()
         self.selectedLayer.setCacheImage(None)

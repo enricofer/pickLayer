@@ -20,3 +20,6 @@ v2.3 20/6/2016
 1) attributes values in context submenu - with copy to clipboard of content
 2) configure snapping options issue fixed
 3) coords typo issue fixed
+
+v3.0 30/3/2018
+1) code migration to QGIS3

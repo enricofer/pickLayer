@@ -26,8 +26,8 @@
 #
 #---------------------------------------------------------------------
 
-from PyQt4.QtCore import pyqtSignal
-from PyQt4.QtGui import QPixmap, QCursor
+from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtGui import QPixmap, QCursor
 from qgis.core import QgsVectorLayer, QgsFeature
 from qgis.gui import QgsMapToolIdentify
 
@@ -35,6 +35,7 @@ from qgis.gui import QgsMapToolIdentify
 
 
 class IdentifyGeometry(QgsMapToolIdentify):
+
     geomIdentified = pyqtSignal(QgsVectorLayer, QgsFeature)
 
     def __init__(self, canvas):
@@ -43,10 +44,13 @@ class IdentifyGeometry(QgsMapToolIdentify):
         self.setCursor(QCursor())
 
     def canvasReleaseEvent(self, mouseEvent):
+        #results = self.identify(mouseEvent.x(), mouseEvent.y(), self.LayerSelection,[self.targetLayer],self.AllLayers)
         try:
-            results = self.identify(mouseEvent.x(), mouseEvent.y(), self.LayerSelection, self.AllLayers)
-        except:
-            results = self.identify(mouseEvent.x(), mouseEvent.y(), self.TopDownStopAtFirst, self.AllLayers)
+            results = self.identify(mouseEvent.x(), mouseEvent.y(), self.LayerSelection,self.AllLayers)
+        except Exception as e:
+            print ("PICKLAYER EXCEPTION: ",e)
+            results = []
         if len(results) > 0:
+            print (results[0].mFeature.attributes())
             self.geomIdentified.emit(results[0].mLayer, QgsFeature(results[0].mFeature))
 
