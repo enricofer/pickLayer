@@ -38,7 +38,8 @@ class IdentifyGeometry(QgsMapToolIdentify):
 
     geomIdentified = pyqtSignal(QgsVectorLayer, QgsFeature)
 
-    def __init__(self, canvas):
+    def __init__(self, canvas, layerType = 'AllLayers'):
+        self.layerType = getattr(QgsMapToolIdentify,layerType)
         self.canvas = canvas
         QgsMapToolIdentify.__init__(self, canvas)
         self.setCursor(QCursor())
@@ -46,11 +47,10 @@ class IdentifyGeometry(QgsMapToolIdentify):
     def canvasReleaseEvent(self, mouseEvent):
         #results = self.identify(mouseEvent.x(), mouseEvent.y(), self.LayerSelection,[self.targetLayer],self.AllLayers)
         try:
-            results = self.identify(mouseEvent.x(), mouseEvent.y(), self.LayerSelection,self.AllLayers)
+            results = self.identify(mouseEvent.x(), mouseEvent.y(), self.LayerSelection,self.layerType)
         except Exception as e:
             print ("PICKLAYER EXCEPTION: ",e)
             results = []
         if len(results) > 0:
             print (results[0].mFeature.attributes())
             self.geomIdentified.emit(results[0].mLayer, QgsFeature(results[0].mFeature))
-

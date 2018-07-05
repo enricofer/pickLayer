@@ -5,7 +5,7 @@ name=pickLayer
 qgisMinimumVersion=3.0
 qgisMaximumVersion=3.99
 description=pick to feature on map canvas to perform layer and feature commands
-version=3.0
+version=3.1
 author=Enrico Ferreguti
 email=enricofer@gmail.com
 
@@ -17,6 +17,7 @@ about=The plugin allows to perform layer and features operations by a contextual
 
 # Uncomment the following line and add your changelog:
 changelog=3.0 code migration to QGIS3
+  3.1 subtract, merge and makevalid new features
 
 # Tags are comma separated with spaces allowed
 tags= layer, functions, change, snap, properties, editing, hide, context menu, context, menu, datasource, data source
