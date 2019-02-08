@@ -199,7 +199,7 @@ class pickLayer:
                     except:
                         customIcon = QtGui.QIcon(os.path.join(self.plugin_dir,"icons","customAction.png"))
                     newActionItem = contextMenu.addAction(customIcon,action.name())
-                    newActionItem.triggered.connect(partial(self.customAction,actionOrder))
+                    newActionItem.triggered.connect(partial(self.customAction,action.id()))
                     actionOrder += 1
         contextMenu.exec_(QtGui.QCursor.pos())
 
