@@ -23,3 +23,9 @@ v2.3 20/6/2016
 
 v3.0 30/3/2018
 1) code migration to QGIS3
+
+v3.1 5/7/2018
+1) subtract geometry new feature
+2) merge with geometry new feature
+3) makeValid geometry new feature
+4) Feature Highlighting 

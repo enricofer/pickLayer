@@ -24,12 +24,13 @@ from PyQt5 import Qt, QtCore, QtWidgets, QtGui, QtWebKit, QtWebKitWidgets, QtXml
 from qgis import core, utils, gui
 
 from qgis.utils import plugins
-from qgis.utils import plugins
-from qgis.gui import QgsAttributeDialog
+from qgis.core import Qgis
+from qgis.gui import QgsAttributeDialog, QgsMessageBar, QgsRubberBand
 from functools import *
 
 from .identifygeometry import IdentifyGeometry
 import os.path
+from time import sleep
 
 def stringToPythonNames(string):
     validPyChars="1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM_"
@@ -93,6 +94,10 @@ class pickLayer:
         self.mapTool = IdentifyGeometry(self.mapCanvas)
         self.mapTool.geomIdentified.connect(self.editFeature)
         self.mapTool.setAction(self.mapToolAction)
+
+        self.clipTool = IdentifyGeometry(self.mapCanvas,layerType = 'VectorLayer')
+        self.clipTool.geomIdentified.connect(self.performSpatialFunction)
+
         self.mapToolAction.triggered.connect(self.setMapTool)
         self.iface.addToolBarIcon(self.mapToolAction)
         self.iface.addPluginToMenu("&Pick to Layer", self.mapToolAction)
@@ -138,7 +143,7 @@ class pickLayer:
             elif self.selectedLayer.geometryType() == core.QgsWkbTypes.PolygonGeometry:
                 self.area = round (self.selectedFeature.geometry().area(),2)
                 self.leng = round (self.selectedFeature.geometry().length(),2)
-                bound = self.selectedFeature.geometry().boundingBox() 
+                bound = self.selectedFeature.geometry().boundingBox()
                 self.clipboardNorthAction = contextMenu.addAction("North: "+str(round(bound.yMaximum(),4)))
                 self.clipboardSouthAction = contextMenu.addAction("South: "+str(round(bound.yMinimum(),4)))
                 self.clipboardEastAction = contextMenu.addAction("East: "+str(round(bound.xMinimum(),4)))
@@ -184,6 +189,15 @@ class pickLayer:
                     self.pasteGeomAction.triggered.connect(self.pasteGeomFunc)
                     self.pasteAttrsAction = contextMenu.addAction(QtGui.QIcon(os.path.join(self.plugin_dir,"icons","pasteIcon.png")),"Paste attributes on feature")
                     self.pasteAttrsAction.triggered.connect(self.pasteAttrsFunc)
+            self.clipFeatureAction = contextMenu.addAction(QtGui.QIcon(os.path.join(self.plugin_dir,"icons","subtractIcon.png")),"Select feature and Subtract")
+            self.clipFeatureAction.triggered.connect(self.clipFeatureFunc)
+            self.clipFeatureAction.setEnabled(self.selectedLayer.isEditable())
+            self.mergeFeatureAction = contextMenu.addAction(QtGui.QIcon(os.path.join(self.plugin_dir,"icons","mergeIcon.png")),"Select feature and Merge")
+            self.mergeFeatureAction.triggered.connect(self.mergeFeatureFunc)
+            self.mergeFeatureAction.setEnabled(self.selectedLayer.isEditable())
+            self.makeValidFeatureAction = contextMenu.addAction(QtGui.QIcon(os.path.join(self.plugin_dir,"icons","makeValidIcon.png")),"Make Valid Geometry")
+            self.makeValidFeatureAction.triggered.connect(self.makeValidFeatureFunc)
+            self.makeValidFeatureAction.setEnabled(self.selectedLayer.isEditable())
             self.copyFeatureAction = contextMenu.addAction(QtGui.QIcon(os.path.join(self.plugin_dir,"icons","copyIcon.png")),"Copy feature")
             self.copyFeatureAction.triggered.connect(self.copyFeatureFunc)
             self.attributeMenu = contextMenu.addMenu(QtGui.QIcon(os.path.join(self.plugin_dir,"icons","viewAttributes.png")),"Feature attributes view")
@@ -209,7 +223,7 @@ class pickLayer:
         p2 = self.transformToCurrentSRS(core.QgsPointXY(featureBox.xMaximum(),featureBox.yMaximum()),self.selectedLayer.crs())
         self.mapCanvas.setExtent(core.QgsRectangle(p1.x(),p1.y(),p2.x(),p2.y()))
         self.mapCanvas.refresh()
-        
+
     def zoomToLayerFunc(self):
         layerBox = self.selectedLayer.extent()
         p1 = self.transformToCurrentSRS(core.QgsPointXY(layerBox.xMinimum(),layerBox.yMinimum()),self.selectedLayer.crs())
@@ -225,7 +239,7 @@ class pickLayer:
 
     def hideFunc(self):
         core.QgsProject.instance().layerTreeRoot().findLayer(self.selectedLayer.id()).setItemVisibilityChecked(False)
-        
+
     def openPropertiesFunc(self):
         self.iface.showLayerProperties(self.selectedLayer)
 
@@ -250,7 +264,7 @@ class pickLayer:
     def stopEditingFunc(self):
         self.iface.setActiveLayer(self.selectedLayer)
         self.iface.actionToggleEditing().trigger()
-        
+
     def startEditingFunc(self):
         self.iface.setActiveLayer(self.selectedLayer)
         self.iface.actionToggleEditing().trigger()
@@ -297,6 +311,7 @@ class pickLayer:
     def editFeature(self,layer,feature):
         self.selectedLayer = layer
         self.selectedFeature = feature
+        self.highlight(feature.geometry())
         self.contextMenuRequest()
         pass
 
@@ -306,4 +321,60 @@ class pickLayer:
 
     def setMapTool(self):
         self.mapCanvas.setMapTool(self.mapTool)
-        
+
+    def highlight(self,geometry):
+        def processEvents():
+            try:
+                QtGui.qApp.processEvents()
+            except:
+                QtWidgets.QApplication.processEvents()
+
+        highlight = QgsRubberBand(self.iface.mapCanvas(), geometry.type())
+        highlight.setColor(QtGui.QColor("#36AF6C"))
+        highlight.setFillColor(QtGui.QColor("#36AF6C"))
+        highlight.setWidth(2)
+        highlight.setToGeometry(geometry,self.iface.mapCanvas().currentLayer())
+        processEvents()
+        sleep(.1)
+        highlight.hide()
+        processEvents()
+        sleep(.1)
+        highlight.show()
+        processEvents()
+        sleep(.1)
+        highlight.reset()
+        processEvents()
+
+    def clipFeatureFunc(self):
+        self.spatialFunction = self.selectedFeature.geometry().difference
+        self.spatialPredicate = "clipped"
+        self.mapCanvas.setMapTool(self.clipTool)
+
+    def mergeFeatureFunc(self):
+        self.spatialFunction = self.selectedFeature.geometry().combine
+        self.spatialPredicate = "merged"
+        self.mapCanvas.setMapTool(self.clipTool)
+
+    def makeValidFeatureFunc(self):
+        validGeometry = self.selectedFeature.geometry().makeValid()
+        self.selectedFeature.setGeometry(validGeometry)
+        self.selectedLayer.updateFeature(self.selectedFeature)
+        self.selectedLayer.triggerRepaint()
+        self.highlight(self.selectedFeature.geometry())
+
+    def performSpatialFunction(self,clipLayer,clipFeature):
+        if clipFeature.geometry().type() != self.selectedFeature.geometry().type():
+            self.iface.messageBar().pushMessage("PickLayer plugin", "Can't perform spatial function on different geometry types" , level=Qgis.Warning, duration=4)
+        else:
+            clippedGeometry = self.spatialFunction(clipFeature.geometry())
+            if clippedGeometry:
+                self.selectedFeature.setGeometry(clippedGeometry)
+                self.selectedLayer.updateFeature(self.selectedFeature)
+                if clipLayer == self.selectedLayer:
+                    self.selectedLayer.deleteFeature(clipFeature.id())
+                self.selectedLayer.triggerRepaint()
+                self.iface.messageBar().pushMessage("PickLayer plugin", "Source Geometry succesfully " + self.spatialPredicate , level=Qgis.Success, duration=4)
+                self.highlight(clippedGeometry)
+            else:
+                self.iface.messageBar().pushMessage("PickLayer plugin", "Invalid processed geometry" , level=Qgis.Warning, duration=4)
+        self.mapCanvas.setMapTool(self.mapTool)
